@@ -1,0 +1,13 @@
+tenacity~=8.3.0
+openai==0.28.0
+#pulp==2.8.0
+pulp==3.2.2
+numpy~=1.26.4
+visdom~=0.2.4
+pandas~=2.2.2
+tqdm~=4.66.4
+aiohttp~=3.9.5
+scikit-learn~=1.5.0
+google-genai==1.36.0
+anthropic==0.67.0
+#pulp=3.2.2
