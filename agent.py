@@ -422,16 +422,16 @@ class NegotiationAgent(DialogAgent):
         lp_rationale, lp_max, lp_lambda = response['rationale'], response['max_bound'], response['lambda']
 
         logging.info("-"*50)
-        logging.info("> #### LP parameters: max_bound=%s, lambda=%s, fairness=%s, stance=%s #######", lp_max, lp_lambda, p_fairness, p_stance)
+        logging.info("> #### LP parameters: max_bound=%s, lambda=%s, fairness=%s, stance=%s #######", lp_max, lp_lambda, partner_fairness, partner_stance)
         logging.info("> LP rationale: %s", lp_rationale)
 
         arg_lambda= response.get("lambda") or None
         arg_max_bound = response.get("max_bound") or None
-        partner_offer_fairness = p_fairness #response.get("partner_offer_fairness") or None
-        partner_stance = p_stance #response.get("partner_stance") or None
-        self.stg_first_step_results.append({"lambda": arg_lambda, "max_bound": arg_max_bound, "partner_fairness": partner_offer_fairness, "partner_stance": partner_stance, 'rationale': lp_rationale})
+        p_offer_fairness = partner_fairness #response.get("partner_offer_fairness") or None
+        p_stance = partner_stance #response.get("partner_stance") or None
+        self.stg_first_step_results.append({"lambda": arg_lambda, "max_bound": arg_max_bound, "partner_fairness": p_offer_fairness, "partner_stance": p_stance, 'rationale': lp_rationale})
 
-        return {"lambda": arg_lambda, "max_bound": arg_max_bound, "partner_fairness": partner_offer_fairness, "partner_stance": partner_stance}
+        return {"lambda": arg_lambda, "max_bound": arg_max_bound, "partner_fairness": p_offer_fairness, "partner_stance": p_stance}
 
     def predict_partner_fairness_stance(self):
         """ Determine LP parameters"""

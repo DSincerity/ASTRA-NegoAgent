@@ -1,0 +1,7 @@
+*.txt
+.flake8
+.python-version
+log
+a2a_results
+.cache
+__pycache__
