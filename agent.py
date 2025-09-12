@@ -149,7 +149,6 @@ class NegotiationAgent(DialogAgent):
         return response
 
 
-
     def handle_dialog(self):
         """
         handle_dialog - Ask or propose an offer.
@@ -171,7 +170,7 @@ class NegotiationAgent(DialogAgent):
                 self.perform_priority_and_offer_prediction(only_priority_prediction=True)
 
         # Depending on the status of the priority confirmation, ask or propose an offer
-        # Confirmation 뿐만 아니라, priority 안에 null이 있는지도 확인해야함!
+        # Verify both that confirmation is not set and that the priority contains a null.
         if self.priority_asker_on and not self.is_priority_confirmed():
             if self.asking_priority_cnt < 2 : # only ask 2 times
                 self.asking_priority_cnt += 1
@@ -189,9 +188,6 @@ class NegotiationAgent(DialogAgent):
                     if check_null_value(self.partner_priority):
                         logging.info(">> After Partner's priority inconsistency is detected, it still has null value in the inferred partner priorty. We will ask the partner what they want")
                         return ("ASKING", self.ask_for_priority_confirmation(ask_for_need_offer=True), None, None)
-                #
-                # return self.ask_for_priority_confirmation(ask_for_need_offer=True) # Need Asking
-        print("[med] partner_prirority: ", self.partner_priority)
 
         #################################################
         # Concsistentcy Checker
@@ -202,7 +198,7 @@ class NegotiationAgent(DialogAgent):
             self.priority_consistency_checker.check_consistency(update_partner_priority=self.update_partner_priority_in_checker)
 
         if self.priority_consistency_checker_on and not self.is_partner_priority_consistent:
-            logging.info(">> !!!!!!!!Partner's priority is inconsistent.")
+            logging.info(">> Partner's priority is inconsistent!")
             #if self.is_inconsistent_item_confirmed: # Inconsistency for the confirmed items
             logging.info(">> Inconsistency for the confirmed items. Turn on the priority checker and asker")
             self.priority_checker_on = True
@@ -210,11 +206,7 @@ class NegotiationAgent(DialogAgent):
             self.asking_priority_cnt += 1
             self.is_counter_offer = False # counter offers는 없었던 것으로 간주.
             return ("ASKING", self.ask_for_priority_confirmation(), None, None)
-            #else: # Inconsistency for the unconfirmed (inferred) items
-            #    pass
 
-        # TEMP: priority_consistency_checker_on is off
-        #self.priority_checker_on = False
         # Add the last offer to the offer history
         if self.is_counter_offer:
             print(">> Partner Counter offer is made. ")
@@ -225,18 +217,23 @@ class NegotiationAgent(DialogAgent):
         return self.make_negotiation_decision()
 
     def make_negotiation_decision(self):
-        # Check if "DEAL" in the last response
 
+
+        ########################################
+        # Decision (Accept or Walk-Away)
+        ########################################
+        # Check if "DEAL" in the last response
         if any(deal.lower() in self.last_response.lower() for deal in ["ACCEPT-DEAL"]):
             logging.debug(">> Partner's last utterance contains 'ACCEPT-DEAL'.")
             return ("ACCEPT-WALKAWAY-DECISON", "ACCEPT-DEAL", None, None)
 
-        # When the negotiation is close to the maximum turn (i.e., at final round), the Agent will make the final decision.
+        # Final Round (When the negotiation is close to the maximum turn), the Agent will make the final decision.
         agent_BATNA = max(self.agent_value_off_table.values()) # top_priority_value = BATNA
         print("compromised_decision_before_end: ", self.compromised_decision_before_end, "| is_counter_offer: ", self.is_counter_offer)
         if self.compromised_decision_before_end and self.is_counter_offer:
             score_from_partner_offer = calculate_score(self.partner_offer_history[-1], self.agent_value_off_table)
-            if score_from_partner_offer >= agent_BATNA:
+
+            if score_from_partner_offer >= agent_BATNA:  # Accept decision based on the BATNA
                 logging.debug(">> Accepting the counter offer: Partner's offer score(%s) >= agent's BATNA(%s)", score_from_partner_offer, agent_BATNA)
                 return ("ACCEPT-WALKAWAY-DECISON", "ACCEPT-DEAL", None, None)
             else:
@@ -244,7 +241,7 @@ class NegotiationAgent(DialogAgent):
                 return ("ACCEPT-WALKAWAY-DECISON", "WALK-AWAY", None, None)
 
         #####################################
-        # Perform ASTRA for offer selection
+        # Propose an Offer
         #####################################
         generated_response = self.propose_offer(with_ASTRA=self.offer_proposer_w_STR)
 
@@ -256,24 +253,20 @@ class NegotiationAgent(DialogAgent):
             self.utterance_offer_history[-1]["STR3_logs"] = self.STR3_logs[-1] if self.STR3_logs else None
         #==========================
 
-
         if not self.is_counter_offer:
             return (f"STR-{self.offer_proposer_w_STR}", generated_response, self.offer_history[-1], None)
 
-
         ################################
-        # Decision Logics
-        # When the partner makes a counter offer, the agent will make a decision based on the counter offer.
+        # Decision (Accept or Walk-Away)
+        # Before the Final round, When the partner makes a counter offer, the agent will make a decision based on the counter offer.
         ################################
         score_from_partner_offer = calculate_score(self.partner_offer_history[-1], self.agent_value_off_table)
         STR_selected_offer_score = calculate_score(self.offer_history[-1], self.agent_value_off_table)
 
-        #------------------
         # Accept Condition
-        #------------------
         if score_from_partner_offer >= STR_selected_offer_score or self.tolerance_for_acceptance > 2:
 
-            # 현재의 partner의 제안이, 지금까지의 제안보다 높은 경우에만 accept
+            # Accept the partner’s offer only if its score is higher than all previous offers.
             highest_score_from_partner_offer = max([calculate_score(offer, self.agent_value_off_table) for offer in self.partner_offer_history if offer is not None])
             if score_from_partner_offer >= highest_score_from_partner_offer:
                 logging.info(">> Accepting the counter offer: Partner's offer score(%s) >= STR selected offer score(%s)", score_from_partner_offer, STR_selected_offer_score)
@@ -282,9 +275,6 @@ class NegotiationAgent(DialogAgent):
                 logging.info(">> Not accepting the counter offer: current score from partner's offer (%s) < highest score from partner's offer(%s)", score_from_partner_offer, highest_score_from_partner_offer)
                 self.tolerance_for_acceptance += 1
 
-        #------------------
-        # Walk-Away Condition
-        #------------------
         # Walk-Away Condition: 1) Partner's offer score < agent's BATNA. 2) Partner's offer score does not change in the last three turns.
         if score_from_partner_offer < agent_BATNA:
             logging.info(">> Walk-Away 1st Cond met: Partner's offer score(%s) < value of agent's BATNA(%s)", score_from_partner_offer, agent_BATNA)
@@ -304,8 +294,9 @@ class NegotiationAgent(DialogAgent):
                         return ("ACCEPT-WALKAWAY-DECISON", "WALK-AWAY", None, None)
 
         if len(self.partner_offer_history) > 2:
-            if self.partner_offer_history[-1] == self.partner_offer_history[-2] != self.partner_offer_history[-3]:
-                generated_response += "If you keep making offers that only consider your own interests, I'm going to walk away! " # Warning
+
+            if self.partner_offer_history[-1] == self.partner_offer_history[-2] != self.partner_offer_history[-3]: # Warning when offers are repeated
+                generated_response += "If you keep making offers that only consider your own interests, I'm going to walk away! "
                 pass
             elif self.partner_offer_history[-1] == self.partner_offer_history[-2] == self.partner_offer_history[-3]:
                 logging.debug(">> Walk-Away 3rd Cond met: Partner's offer is repeated in the last three turns.")
@@ -370,9 +361,7 @@ class NegotiationAgent(DialogAgent):
         logging.info("\n======== offer_history ===== \n%s", self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_strategy=True, w_utterance=False, w_inferred_partner_priority=True, w_lp_params=True, role_user="PARTNER OFFER", role_assistant="YOUR OFFER"))
         logging.info("\n======== concession_history ===== \n%s", self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_utterance=False, set_turn_index=True,  w_inferred_partner_priority=True, w_lp_params=True,filter_None_offer=True, role='user'))
 
-        # 2가지 variation: 1) turn-level strategy 사용, 2) turn-level strategy 미사용. Arguement 사용 x. 현재 manually setting
         prompt=prompt_builder(self.agent_value_off_table, None, None, proc_dialog_history, offer_history=proc_offer_history, concession_history=proc_concession_history, expert_persona='all', prompt_type='generate_offer', round=round_information, verbose=False)
-        #prompt=prompt_builder(self.agent_value_off_table, None, None, proc_dialog_history, offer_history=proc_offer_history, concession_history=proc_concession_history, expert_persona='all', prompt_type='generate_offer_wo_strategy', round=round_information, verbose=False)
 
         msg= {"messages": [{ "role": "user", "content": prompt}], "model": self.engine_STR, "json_parsing_check": True}
         generated_offer = None
@@ -396,8 +385,6 @@ class NegotiationAgent(DialogAgent):
     def determine_LP_params(self, partner_fairness, partner_stance, **kwargs):
         """ Determine LP parameters"""
 
-
-        #round_information = f"{self.current_dialogue_round} round / {self.args.n_round} rounds"
         round_information = f"{self.cnt_agent_utterance(self.utterance_offer_history)+1} round / {self.args.n_round} rounds" #if self.utterance_offer_history else f"1 round / {self.args.n_round}  rounds"
         proc_dialog_history = self.processed_dialog_history()
         proc_offer_history = self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_strategy=True, w_utterance=False, role_user="PARTNER OFFER", role_assistant="YOUR OFFER")
@@ -408,7 +395,6 @@ class NegotiationAgent(DialogAgent):
         logging.info("\n======== offer_history ===== \n%s", self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_strategy=True, w_utterance=False, w_inferred_partner_priority=True, w_lp_params=True, role_user="PARTNER OFFER", role_assistant="YOUR OFFER"))
         logging.info("\n======== concession_history ===== \n%s", self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_utterance=False, set_turn_index=True,  w_inferred_partner_priority=True, w_lp_params=True,filter_None_offer=True, role='user'))
 
-        #prompt=prompt_builder(self.agent_value_off_table, None, None, proc_dialog_history, offer_history=proc_offer_history, concession_history=proc_concession_history, expert_persona='all', prompt_type='generate_LP_query', round=round_information, latest_offer=latest_offer_str, verbose=False)
         prompt=prompt_builder(self.agent_value_off_table, None, None, proc_dialog_history, offer_history=proc_offer_history, concession_history=proc_concession_history, expert_persona='all', prompt_type='generate_LP_param_max_lambda', round=round_information, latest_offer=latest_offer_str, partner_fairness_stance=partner_fairness_stance, verbose=False)
 
         #print("> Generate LP questions\n", prompt)
@@ -447,10 +433,6 @@ class NegotiationAgent(DialogAgent):
         prompt_fairness=prompt_builder(self.agent_value_off_table, None, None, proc_dialog_history, offer_history=proc_offer_history, expert_persona='all', prompt_type='generate_LP_param_fairness', verbose=False)
         prompt_stance= prompt_builder(self.agent_value_off_table, None, None, proc_dialog_history, concession_history=proc_concession_history, expert_persona='all', prompt_type='generate_LP_param_stance', verbose=False)
 
-        #logging.info("\n\n\n\n***prompt_stance: \n%s", prompt_stance)
-
-        #print("> Generate LP questions\n", prompt)
-        #exit()
         msg_fairness= {"messages": [{ "role": "user", "content": prompt_fairness}], "model": self.engine_STR, "json_parsing_check": True}
         msg_stance= {"messages": [{ "role": "user", "content": prompt_stance}], "model": self.engine_STR, "json_parsing_check": True}
         fair_response = self.call_engine(**msg_fairness)
@@ -487,7 +469,62 @@ class NegotiationAgent(DialogAgent):
             maximum_val_LP = self.set_maximum_value_for_LP()  # Set the maximum value in LP equation
 
         logging.info(">> Maximum value for LP: %s", maximum_val_LP)
-        return self.strategic_reasoning_second_stg(maximum_val_LP, lambda_LP, top_n=self.args.top_n)
+
+        # check LP cache
+        lp_cache_key = (maximum_val_LP, tuple(self.agent_value_off_table.items()), tuple(self.int_partner_priority.items()))
+        if self.lp_caching_on and lp_cache_key in self.lp_results:
+            logging.info('>> LP results: found cached results')
+            return sorted(self.lp_results[lp_cache_key], key=lambda x: x[0], reverse=True)[:min(top_n, len(self.lp_results))]
+        logging.debug('>> LP results: no cached results')
+
+        # Excute the LP function to generate potential offers
+        try:
+            logging.debug(">> Executing LP function with the parameters.: max_value(%s), partner_priority(%s)", maximum_val_LP, self.int_partner_priority)
+            offer_list = calculateBestOfferFromLP(maximum_val_LP, lambda_lp, self.agent_value_off_table, self.int_partner_priority)
+            self.cache_and_update_lp_results(lp_cache_key, offer_list)
+        except Exception as e:
+            logging.error(f"Error executing LP function: {e}")
+            logging.error(f">> the parameters used: maximum_val_LP:{maximum_val_LP} | agent_value_off_table:{self.agent_value_off_table} | int_partner_priority:{self.int_partner_priority}")
+            return []
+
+        # Check if the LP function returned any offers
+        if not offer_list:
+            logging.error(f"No offers from LP. Please check the parameters for the LP function. maximum_val_LP:{maximum_val_LP} | agent_value_off_table:{self.agent_value_off_table} | int_partner_priority:{self.int_partner_priority}")
+            return []
+
+        # Sort offers by their total score in descending order
+        sorted_offers = sorted(offer_list, key=lambda x: x[0], reverse=True)
+
+        # Check and filter the offers : filter out 1) the offers with the same offer in previous & 2) the offer not beneficail to both players
+        _previous_offer = self.offer_history[-1] if self.offer_history else None
+        if _previous_offer:
+            # 1) Filter out the offer with the same offer in the previous offer
+            #_sorted_offers = [offer for offer in sorted_offers if offer[1:] != (_previous_offer['food'], _previous_offer['water'], _previous_offer['firewood'])]
+            _sorted_offers = [offer for offer in sorted_offers]
+
+            # 2) Filter out offers not beneficial to both players
+            agent_score_prev = calculate_score(_previous_offer, self.agent_value_off_table)
+            partner_score_prev = convert_item_cnts_partner(_previous_offer, self.int_partner_priority)[0]
+            _sorted_offers = [offer for offer in _sorted_offers if offer[0] >= agent_score_prev or convert_item_cnts_partner(offer, self.int_partner_priority)[0] >= partner_score_prev]
+
+
+            #logging.info(">> LP offers after filtering: from %s to %s", len(sorted_offers), len(_sorted_offers))
+            sorted_offers = _sorted_offers
+
+        _previous_offer = self.offer_history[-1] if self.offer_history else None
+
+        if not sorted_offers:
+            logging.error("All sorted offers were filtered out. No offers to return.")
+            return []
+
+        # Print sorted offers
+        logging.debug(">> Offer list from LP:")
+        for offer in sorted_offers:
+            logging.debug(f"[Total Score: {round(offer[0])}] Food:{int(offer[1])}, Water:{int(offer[2])}, Firewood:{int(offer[3])}")
+
+        # Return the top 6 offers, assuming there are at least 6 offers
+        top_offers = sorted_offers[:min(self.args.top_n, len(sorted_offers))]
+        return top_offers
 
     def select_best_offer(self, offers):
         """Third step of strategic reasoning: Minimize regret by selecting the most strategic offer."""
@@ -542,7 +579,6 @@ class NegotiationAgent(DialogAgent):
         # 1) Quesstion about partner's priority and offer
         # For the priority prediction, previous partner's priority information and whole conversation are required.
         # For the offer prediction, it can be done at utterance level. But currently, we are using the whole conversation history.
-        # Todo: decide to ask both priorirty and offer questions at once or parallelly with seperate calls.
         ################
         # Load the initial instruction for partner's priroriry
         assert self.agent_value_off_table is not None
@@ -571,7 +607,7 @@ class NegotiationAgent(DialogAgent):
             #logging.debug(">> inferred_partner_priority : %s", inferred_partner_priority)
             # Update partner's priority
 
-            # confirm이 안되어 있으때 & priority에 null값이 있을때만 업데이트
+            # Update only if it’s unconfirmed and the priority has a null value.
             if not self.is_priority_confirmed() and check_null_value(partner_priority):
                 partner_prioriry_to_be_updated=self.update_partner_priority(partner_prioriry_to_be_updated)
 
@@ -645,83 +681,6 @@ class NegotiationAgent(DialogAgent):
             #logging.debug("<offer prediction prompt> \n", offer_q))
             logging.debug(">> predicted partner_offer from STR-1 : %s", partner_offer)
 
-        # Todo: Update the partner's priority and offer based on the prediction
-        # Update partner's priority
-        #logging.debug("=> Partner's priority will be updated from (Current) %s to (Updated) %s", self.partner_priority, partner_prioriry_to_be_updated)
-        #self.update_partner_priority(partner_prioriry_to_be_updated)
-        #self.partner_priority = partner_prioriry_to_be_updated
-
-    def strategic_reasoning_second_stg(self, maximum_val_LP, lambda_lp, top_n=5):
-        """Execute the linear programming (LP) function to generate potential offers based on provided parameters."""
-        logging.debug("> [Process] Strategic Reasoning Second Stage - LP Execution")
-
-        lp_cache_key = (maximum_val_LP, tuple(self.agent_value_off_table.items()), tuple(self.int_partner_priority.items()))
-        if self.lp_caching_on and lp_cache_key in self.lp_results:
-            logging.info('>> LP results: found cached results')
-            return sorted(self.lp_results[lp_cache_key], key=lambda x: x[0], reverse=True)[:min(top_n, len(self.lp_results))]
-        logging.debug('>> LP results: no cached results')
-
-        # Excute the LP function to generate potential offers
-        try:
-            logging.debug(">> Executing LP function with the parameters.: max_value(%s), partner_priority(%s)", maximum_val_LP, self.int_partner_priority)
-            offer_list = calculateBestOfferFromLP(maximum_val_LP, lambda_lp, self.agent_value_off_table, self.int_partner_priority)
-            self.cache_and_update_lp_results(lp_cache_key, offer_list)
-        except Exception as e:
-            logging.error(f"Error executing LP function: {e}")
-            logging.error(f">> the parameters used: maximum_val_LP:{maximum_val_LP} | agent_value_off_table:{self.agent_value_off_table} | int_partner_priority:{self.int_partner_priority}")
-            return []
-
-        # Check if the LP function returned any offers
-        if not offer_list:
-            logging.error(f"No offers from LP. Please check the parameters for the LP function. maximum_val_LP:{maximum_val_LP} | agent_value_off_table:{self.agent_value_off_table} | int_partner_priority:{self.int_partner_priority}")
-            return []
-
-        # Sort offers by their total score in descending order
-        sorted_offers = sorted(offer_list, key=lambda x: x[0], reverse=True)
-
-        # Check and filter the offers : filter out 1) the offers with the same offer in previous & 2) the offer not beneficail to both players
-        _previous_offer = self.offer_history[-1] if self.offer_history else None
-        if _previous_offer:
-            # 1) Filter out the offer with the same offer in the previous offer
-            #_sorted_offers = [offer for offer in sorted_offers if offer[1:] != (_previous_offer['food'], _previous_offer['water'], _previous_offer['firewood'])]
-            _sorted_offers = [offer for offer in sorted_offers]
-
-            # 2) Filter out offers not beneficial to both players
-            agent_score_prev = calculate_score(_previous_offer, self.agent_value_off_table)
-            partner_score_prev = convert_item_cnts_partner(_previous_offer, self.int_partner_priority)[0]
-            _sorted_offers = [offer for offer in _sorted_offers if offer[0] >= agent_score_prev or convert_item_cnts_partner(offer, self.int_partner_priority)[0] >= partner_score_prev]
-
-            # Debug information if needed
-            # for _offer in sorted_offers:
-            #     _partner_offer = convert_item_cnts_partner(_offer, self.int_partner_priority)
-            #     _partner_score_offer = _partner_offer[0]
-            #     if _offer[0] < agent_score_prev and _partner_score_offer < partner_score_prev:
-            #         print(">> Filtered out the offer not beneficial to both players")
-            #         print("Previous Agent offer: ", _previous_offer)
-            #         print(f"Candidate offer: {_offer}")
-            #         print(f"partner priority: {self.int_partner_priority}")
-            #         print(f"Candidate offer (from the partner side): {_partner_offer}")
-            #         print(f"Previous offer Score (Agent | Partner): {agent_score_prev} | {partner_score_prev}")
-            #         print(f"Current offer Score (Agent | Partner): {_offer[0]} | {_partner_score_offer}")
-            #         sorted_offers.remove(_offer)
-
-            #logging.info(">> LP offers after filtering: from %s to %s", len(sorted_offers), len(_sorted_offers))
-            sorted_offers = _sorted_offers
-
-        _previous_offer = self.offer_history[-1] if self.offer_history else None
-
-        if not sorted_offers:
-            logging.error("All sorted offers were filtered out. No offers to return.")
-            return []
-
-        # Print sorted offers
-        logging.debug(">> Offer list from LP:")
-        for offer in sorted_offers:
-            logging.debug(f"[Total Score: {round(offer[0])}] Food:{int(offer[1])}, Water:{int(offer[2])}, Firewood:{int(offer[3])}")
-
-        # Return the top 6 offers, assuming there are at least 6 offers
-        top_offers = sorted_offers[:min(top_n, len(sorted_offers))]
-        return top_offers
 
     def check_score_repetition(self, check_turns=2):
         if len(self.offer_history) < check_turns:
@@ -753,7 +712,7 @@ class NegotiationAgent(DialogAgent):
             )
         processed_offer_candidates_str = "\n".join(processed_offer_candidates)
 
-        # Evaluate each offer and generate OSAD messages
+        # Evaluate each offer and generate PAP messages
         partner_scores_list=[]
         processed_agent_offer_candidates= []
         for offer_idx, offer in enumerate(offers_from_LP):
@@ -787,29 +746,17 @@ class NegotiationAgent(DialogAgent):
 
 
         # Asynchronous call to the engine
-        #logging.info("osad_msgs: %s", osad_msgs)
         combined_api_calls = osad_msgs + sa_msgs
-        #logging.info("osad_msgs: %s", osad_msgs)
         loop = asyncio.get_event_loop()
         combined_results = loop.run_until_complete(call_multiple_apis(combined_api_calls))
         results1 = combined_results[:len(osad_msgs)]
         results2 = combined_results[len(osad_msgs):]
-        #results3 = combined_results[len(osad_msgs)+len(f_osad_msgs):]
-        #print("results2: ", results2)
-        #exit()
 
 
-        # Todo : validation - List[Dict]
         assert all(isinstance(x, dict) for x in combined_results), f"API results (OSAD + Assement) should be a list of dictionaries. combined_results: {combined_results}"
         if not all(isinstance(x, dict) for x in combined_results):
             error_case = [ x  for x in combined_results if not isinstance(x, dict)]
             logging.error(f"!API results (OSAD + Assement) Error case: {error_case}")
-
-        # OSAD - Calculate the acceptance probability for each offer
-        acceptance_probs = [
-            calculate_prob_accept([json.loads(x["message"]['content']).get('decision') for x in i["choices"] if x is not None])
-            for i in results1
-        ]
 
         # Processing the results
         # OSAD Results
@@ -834,13 +781,7 @@ class NegotiationAgent(DialogAgent):
         # ranking normalization from 0 to 1
         min_rank, max_rank = min(offer_ranks), max(offer_ranks)
         normalized_ranks = [(max_rank - rank) / (max_rank - min_rank) for rank in offer_ranks]
-        #print("normalized_ranks: ", normalized_ranks)
 
-        # Select the best offer based on the acceptance probability and the accesment score with weighted sum (w1*acceptance_prob + w2*score)
-        #assert len(offers_from_LP) == len(acceptance_probs) == len(assement_scores) == len(top_strategies), f"Offers_from_LP: {len(offers_from_LP)} | acceptance_probs: {len(acceptance_probs)} | assement_scores: {len(assement_scores)} | strategy_dist: {len(top_strategies)}"
-
-
-        # Todo type checking and filtering
         # Fine-grained OSAD Results
         fg_w = [0.7, 0.3]
         fg_scores = list(zip(offers_from_LP, total_score, stg_potential, normalized_ranks, partner_scores_list))
@@ -856,10 +797,6 @@ class NegotiationAgent(DialogAgent):
 
         # print Rationales for STR3
         logging.info(" Top Stg: %s | Top Offer: %s | Rationales: \n%s", top_stgs_str, top_offer, "\n".join(f"{index}: {item}" for index, item in enumerate(rationales, 1) if top_stg in item))
-        #logging.info(" Top Stg: %s | Top Offer: %s", top_stgs_str, top_offer)
-        #top_stg, top_offer, rationales
-
-        #assert final_scores, f"No final scores found. Please check the results. Acceptance_probs: {acceptance_probs} | Assement_scores: {assement_scores} | offers_from_LP : {offers_from_LP} | combined_api_calls: {combined_api_calls} | combined_results: {combined_results}"
 
         #TEMP ablation study for STR3
         #best_offer = offers_from_LP[offer_ranks.index(0)] #top_offer
@@ -1065,11 +1002,6 @@ class NegotiationAgent(DialogAgent):
             score = calculate_score(offer, self.agent_value_off_table)
             suggested_offer = f"[Score {score}] Food:{offer['food']}, Water:{offer['water']}, Firewood:{offer['firewood']}"
 
-        # proc_dialog_history=None
-        #proc_offer_history = self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_strategy=True)
-        #proc_concession_history = self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_utterance=False, set_turn_index=True, role='user')
-
-        # TEMP: Need to reviwe
         proc_dialog_history=self.processed_dialog_history()
         proc_offer_history = self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_strategy=True, w_utterance=False, set_turn_index=True, role_user="PARTNER OFFER", role_assistant="YOUR OFFER")
         proc_concession_history = self.process_utter_offer_history(self.utterance_offer_history, self.int_partner_priority, w_utterance=False, set_turn_index=True, filter_None_offer=True, role='user')
@@ -1088,10 +1020,6 @@ class NegotiationAgent(DialogAgent):
 
 
         prompt=prompt_builder(self.agent_value_off_table, None, None, proc_dialog_history, suggested_offer=suggested_offer, offer_candidates=offer_candidates, offer_history=proc_offer_history, concession_history=proc_concession_history, prev_STR_results=previous_STR_result_str, expert_persona='all', prompt_type='fine_grained_self_assessment', verbose=False)
-
-        #logging.info("FG-SA_PROMPT:\n %s", prompt)
-        #print("FG-SA_PROMPT", prompt)
-        #exit()
         msg= {"messages": [{ "role": "user", "content": prompt}], "n": number_of_assessment, "json_parsing_check": True, "model": self.engine_STR}
         if only_return_msg:
             return msg
