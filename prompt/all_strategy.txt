@@ -1,0 +1,41 @@
+### Turn-Level Strategies ###
+In negotiation, a concession refers to giving up some potential gain in your score. It is based solely on your own offers, independent of the other party’s offer, even a very balanced parter offer. A concession is made when you present an offer with a lower score than a previous offer you have made.
+[Cooperative Strategies]
+1. Initial Concession (LIC):
+    When: early in the negotiation. There are only a few offers made by both the partner and you in the offer histories, and No INITIAL concessions have been made yet. Check how many offers are in you and partner offer histories.
+    How: make a significant concession that gives the partner they really want.
+    Why: this demonstrates cooperation and often prompts reciprocal concessions. Use this strategy at the start to show your intention to cooperate.
+2. Continued-Smaller Concessions (CSC):
+    When: You made a large concession in your most recent offer, and your partner has either made a small concession or presented the same offer as before (partner's stance: generous or neutral). In other words, their score in their latest offer is slightly lower than or equal to their score in the previous offer.
+    How: Make a smaller concession that has a lower score than your most recent offer. The new offer must reduce your score by at least 1 point compared to your last offer. Avoid repeating the exact score from your prior offer.
+    Why: This shows ongoing commitment and encourages the counterpart to reciprocate. Use this strategy to maintain cooperation and gradually lower demands.
+3. Reciprocal Concessions (RC):
+    When: The partner made a SIGNICANT CONCESSION FIRST in the MOST RECENT offer of the partner, regardless of any prior concessions, indiciating partner's 'generous' stance, not greedy. Specifically, there should be at least two offers in the partner’s offer history, with their most recent offer score significantly lower (e.g., by 3 points or more) than the score of the second most recent offer. This information can be verified in the partner’s offer history.
+    How: Make a concession that has a lower score than your most recent offer. Do not repeat the exact score of your previous offer. Ensure to reduce your total score by at least 1 score as a concession, aligning with the partner’s recent willingness to reduce their score.
+    Why: this rewards their cooperation and motivates them to continue making concessions. Use this strategy to promote fairness and ensure balanced concessions.
+4. Logrolling (LGR):
+    When: Any time in the negotiation.
+    How: offer items that are more important to the partner in exchange for items that are more important to you. The suggested offer has more items that are high priority for you and low priority for the partner than previous partner/your offers.
+    Why: this maximizes collective points and creates win-win solutions. Use this strategy to achieve mutually beneficial outcomes.
+5. Mutual Gain Focus (MGF):
+    When: Whenever the partner’s score is higher than yours in the most recent partner's offer.
+    How: emphasize win-win solutions and mutual benefits by adjusting your offer to reflect shared gains. Focus on fairness and shared gains to build cooperation, slightly prioritizing shared benefits over your own maximum score.
+    Why: use this strategy to foster a cooperative negotiation environment.
+
+[Competitive and Pushing Strategies]
+1. Aggressive Early Offers (AEO):
+    When: Apply this strategy at the beginning and early stages of negotiation, when few or no offers have been exchanged. Check how many offers are in your and your partner's offer histories.
+    How: Start by making highly aggressive, selfish offers that favor you. For the intial offer when no offer has been made, aim for a score higher than 28. In the early stage, when only a few offers were made, aim for scores above 25 with over five total items, leaving room for later concessions.
+    Why: this allows room for concessions later without significantly affecting your overall value. Use this strategy early on to secure a strong initial advantage.
+2. Response to Extreme Offer (REO):
+    When: The partner makes an extremely selfish inital offer. The partner's previous offer gives you a score less than 14.
+    How: Respond to a selfish and aggressive offer by making a counteroffer where you claim most of the items, ensuring a very high score that matches what the other party would achieve with their offer.
+    Why: this promotes fairness norms and discourages extreme demands. Use this strategy to signal fairness and maintain balance.
+3. No Concession Response (NCR):
+    When: The opponent stays firm, with their two most recent offers showing no change in score (partner's 'neutral' stance) and higher than yours, showing no concessions despite your recent ones. This follows at least one non-concession offer from them after your recent concession.
+    How: Stop making any further concessions and hold firm on your current position. However, avoid using the NCR strategy more than twice in succession, as this may not be an effective approach.
+    Why: This discourages the opponent from exploiting your concessions and ensures that the negotiation remains balanced. Use this strategy to protect your interests when the opponent is not reciprocating concessions.
+4.  Reject Negative Concession (RNC):
+    When: The partner’s score has increased in their two most recent offers with partner's greedy stance.
+	How: Maintain your current stance and offer without making any concessions. Stand firm and do not adjust your position in response to their greedy behavior.
+    Why: This prevents the partner from pushing for unfair gains and signals that you’re unwilling to accept one-sided concessions, encouraging them to seek a more balanced agreement.

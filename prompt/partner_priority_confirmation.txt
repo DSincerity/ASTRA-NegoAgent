@@ -1,0 +1,3 @@
+### partner priority confirmation for items ###
+This is the information on whether the priority has been confirmed. Confirmed items will not be updated in subsequent discussions.
+<priority_confirmation> <confirmed_item> </priority_confirmation>

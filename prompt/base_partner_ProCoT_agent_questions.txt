@@ -1,0 +1,31 @@
+# Goal and General Instructions
+- In this negotiation, your goal is to achieve the highest possible score by reaching a mutually agreed outcome with the other party.
+- You can strategiccally choose to make either an assertive or generous offer to improve your final score. It is recommended to start with a aggresive initial offer as part of a strategic approach to maximize your score.
+- However, keep in mind that if your partner walks away, you will receive NO benefit (i.e., a score of 0). Thus, reaching an agreement is very crucial to achieving any positive outcome. Be mindful not to appear overly assertive or stubborn.
+- Be adaptive to the flow of negotiation. Consider how your partner reacts to each offer and adjust your approach accordingly. Demonstrating flexibility and responsiveness will improve your chances of securing a favorable outcome.
+- Critical: Do not repeat the same or a similar one-sided offer more than twice without making any changes. If you do, your partner is more likely to lose interest and walk away from the negotiation entirely, resulting in no agreement and no benefit for you. Adapting your offers based on your partner’s responses is key to keeping them engaged and maximizing your chances of success.
+
+# Decision
+- When the partner reveals any priority preferences (high, medium, low) for specific items, incorporate those preferences into your decision to accept, reject, or propose an offer. If the partner’s preferences are unknown, you can inquire about which items they prioritize.
+- Your negotiation score is calculated by multiplying the quantity of each item you have secured by the value you assign to that item, and then summing the results. Naturally, the more high-priority items you secure, the higher your final score is likely to be.
+- When recieving or making an offer, ensure that all items are accounted for. Remember that there are 3 of each item (food, water, firewood). If there is an offer that doesn't account for all items, clarify the unaccounted items. You cannot make an offer that has more than 3 of each item total.
+- Once you reach a consensus on the negotiation terms with the other party or you receive an offer from the other party that is favorable enough for you to accept, you can accept the offer made by the other party (e.g., "ACCEPT-DEAL").
+- If you find the negotiation difficult or perceive it as unfair, you have the option to leave the negotiation (e.g., "WALK-AWAY").
+
+# Caution for the response
+- When proposing an offer, ensure that the subject ("I" or "you") is clearly specified to indicate who will receive each item. Avoid using vague terms including "WE", "we take.." and "we both take.."
+- When you propose an offer, you must provide a full offer, explicitly stating the number of each of the three items you want. (e.g., I will take 3 food, 2 water and 1 firewood)
+- The negotiation for items must be aligned with the given negotiation conditions, and items cannot be divided into fractions (e.g., 1.5 food).
+- Your response should be concise and in complete sentences.
+
+Your final output should be in JSON format and include the following:
+- Given the situation, item description and the conversation history, in order to reach a better deal with the partner, first analyse the current negotiation progress and consider an appropriate goal, then select the most appropriate set of negotiation strategies and the most appropriate dialogue act to reach the goal. Based on the selected negotiation strategies and dialogue act, generate a response. The output should start with the analysis of the current negotiation progress and an appropriate goal. To reach this goal, the most appropriate set of negotiation strategies is determined first with [] and then the most appropriate dialogue act is selected as []. Based on the selected negotiation strategies and dialogue act, you make the final response.
+- Negotiation strategies: ['assertive_count', 'third_person_singular', 'hedge_count', 'neg_sentiment', 'trade_in', 'liwc_informal', 'personal_concern', 'friend', 'liwc_certainty', 'first_person_singular_count', 'third_person_plural', 'politeness_greet', 'number_of_diff_dic_neg', 'factive_count', 'politeness_gratitude', 'number_of_diff_dic_pos', 'family', 'politeness_please', 'pos_sentiment', 'propose', 'first_person_plural_count']
+- Dialogue acts: ['inform', 'agree', 'intro', 'reject', 'counter-price', 'vague-price', 'inquiry', 'unknown', 'insist', 'accept', 'offer', 'disagree', 'init-price', 'quit'] </s>
+Example JSON output:
+{
+    "Negotiation strategies": [strategies],
+    "Dialogue acts" : [dialogue act],
+    "response" : response
+}
+

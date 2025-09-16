@@ -7,11 +7,8 @@
     "one_step_ahead_decision" : "{negotiation_context}\n{negotiation_value_off_table}\n{priority}\n{conversation_history}\n{offer_candidates}\n{suggested_offer}\n{questions}",
     "offer_grounded_generation": "{negotiation_context}\n{partner_concession_history}\n{conversation_history}\n{selected_offer}\n{questions}",
     "moderator": "{conversation_history}\n{questions}",
-    "offer_decision": "{negotiation_context}\n{conversation_history}\n{questions}",
     "consistency_check": "{negotiation_context}\n{conversation_history}\n{questions}",
     "double_check_partner_offer": "{conversation_history}\n{questions}",
-    "self_assessment": "{negotiation_context}\n{negotiation_value_off_table}\n{priority}\n{strategy}\n{conversation_history}\n{suggested_offer}\n{questions}",
-    "self_fine_grained_assessment": "{negotiation_context}\n{negotiation_value_off_table}\n{suggested_offer}\n{conversation_history}\n{questions}",
     "fine_grained_self_assessment": "{negotiation_context}\n{negotiation_value_off_table}\n{strategy}\n{round}\n{conversation_history}\n{offer_history}\n{partner_concession_history}\n{previous_STR_result}\n{offer_candidates}\n{questions}",
     "fine_grained_osad": "{negotiation_context}\n{negotiation_value_off_table}\n{priority}\n{offer_candidates}\n{suggested_offer}\n{conversation_history}\n{questions}",
     "base_partner_agent": "{negotiation_context}\n{negotiation_value_off_table}\n{conversation_history}\n{questions}",
@@ -23,6 +20,5 @@
     "generate_LP_param_fairness": "{negotiation_context}\n{negotiation_value_off_table}\n{conversation_history}\n{offer_history}\n{questions}",
     "generate_LP_param_stance": "{negotiation_context}\n{negotiation_value_off_table}\n{conversation_history}\n{partner_concession_history}\n{questions}",
     "generate_LP_param_max_lambda": "{role_specification}\n{negotiation_context}\n{negotiation_value_off_table}\n{conversation_history}\n{partner_concession_history}\n{latest_offer}\n{partner_fairness_stance}\n{questions}",
-    "generate_offer": "{negotiation_context}\n{negotiation_value_off_table}\n{strategy}\n{round}\n{conversation_history}\n{offer_history}\n{partner_concession_history}\n{questions}",
-    "generate_offer_wo_strategy": "{negotiation_context}\n{negotiation_value_off_table}\n{round}\n{conversation_history}\n{offer_history}\n{partner_concession_history}\n{questions}"
+    "generate_offer": "{negotiation_context}\n{negotiation_value_off_table}\n{strategy}\n{round}\n{conversation_history}\n{offer_history}\n{partner_concession_history}\n{questions}"
 }

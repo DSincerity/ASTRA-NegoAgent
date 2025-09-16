@@ -1,0 +1,15 @@
+### Task ###
+- This task is identify the partner's fairness given their recent offer.
+- Determine the fairness of the partner’s latest offer by comparing both your score and the partner’s score from their most recent offer (found in <offer_history>). The assessment should focus on the comparison of the scores from the partner’s latest offer, not based on the offer you proposed. If no offer was made in the previous turn, classify fairness as 'unknown'.
+    1. Fair:
+        - The score difference between you and your partner is small (≤ 3).
+        - The partner’s score is less than 19.
+        - The partner’s score is lower than or equal to yours.
+    2. Unfair: The partner’s score is significantly higher than yours.
+    3. Unknown: The partner's did not make an offer in the previous turn.
+
+- The final output should be in JSON format as follows:
+{
+    'rationale_for_fairness: First, find both of your and the partner's scores from the partner's LASTET offer in the partner's offer history. Then, given the standard of classifying the partner offer fairness, classify their fairness,
+    'partner_offer_fairness' : 'fair' or 'unfair' or 'unknown' by by reviewing both your and your partner’s scores in the latest partner offer from the offer history,
+}

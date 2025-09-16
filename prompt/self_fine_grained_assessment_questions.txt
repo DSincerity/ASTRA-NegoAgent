@@ -1,0 +1,32 @@
+### Question ###
+Evaluate the suggested offer within <suggested_offer> based on the following criteria:
+
+1. Priority Alignment:
+- Description: How well does the offer align with your stated priorities for food, water, and fire? Consider how much of each item you are receiving relative to its importance to you.
+- Scale: 0 (not aligned) to 5 (perfectly aligned)
+- Score: [0-5]
+2. Total Units:
+- Description: Evaluate the total number of units you are receiving in this offer. Consider if the total units offered are fair and reasonable.
+- Scale: 0 (very few units) to 5 (all units available)
+- Score: [0-5]
+3. Total Score:
+- Description: Based on your priorities, calculate the total score for the offer you will get. Note that maximum score is 36.
+- Scale: 0 (very low score) to 5 (maximum score)
+- Score: [0-5]
+4. Fairness:
+- Description: Evaluate the fairness of the offer. Compare the offer (i.e., the offer within <suggested_offer>) you are receiving to the offer (i.e., the offer within <suggested_offer_for_parter>) you would expect to give in return. Consider if the distribution is equitable.
+- Scale: 0 (completely unfair) to 5 (completely fair)
+- Score: [0-5]
+5. Strategic Potential:
+- Description: Consider the strategic potential of the offer. Evaluate if the offer provides room for future negotiations and if it opens up possibilities for a mutually beneficial agreement.
+- Scale: 0 (no potential) to 5 (high potential)
+- Score: [0-5]
+
+- The final output should be in JSON format as follows:
+{
+    "Priority Alignment": 0-5,
+    "Total Units": 0-5,
+    "Total Score": 0-5,
+    "Fairness" : 0-5,
+    "Strategic Potential": 0-5
+}

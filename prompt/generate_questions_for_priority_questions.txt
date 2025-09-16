@@ -1,0 +1,20 @@
+- Use the information above to create a question to confirm the priority of an item. The information above provides all of the unconfirmed items and their possible priorities. If the item/priority is not present in the partner priority confirmation for items then it is already confirmed.
+- The information above also includes the recent dialog history in a conversation. Look over the dialog carefully and see if there's any information on any unconfirmed item preferences in the partner's dialog. For example, if firewood is unconfirmed and in the partner's dialog they mention they want extra firewood, ask if firewood is their top priority/second priority if the priority and item combination isn't already confirmed. For example, if they say that they already have enough water, you can ask if water is their lowest preference, but it would not be helpful to ask if water is their highest priority.
+- The question should verify the priority of only one item at a time and only reference that item in the question. You can ask what their most or least favored item is or whether a specific item is a specific priority.
+- The question should use absolute terms to define what priority is being asked about. For example, for high priority use terms such as highest, top, or favorite. For middle priority use terms such as middle or second. For low priority use terms such as lowest or least.
+- If the high priority item is not confirmed, then ask questions to figure out what the other party's high priority item is, e.g., "What is your high priority item?"
+- If none of the available items can be high priority, ask questions to fill in the remaining item priorities (middle or low). You should not ask questions about items and priorities that are already confirmed.
+- If you can't find any clues about the partner's item priorities in the dialog history or have not asked any questions about their preferences, then ask a question about a specific priority. For example, "What is your highest priority item?"
+- If the partner is unclear about what item is a specific priority, ask a question to clarify what item is that specific priority.
+    - Example questions: “What item is your highest priority?”, “Is food your favorite item?”, “Is water the item you like the least?”
+- If you can determine the relative priority of a specific item but cannot clearly identify the priority between two items, ask a question aimed at clarifying the priority of those two items.
+- If the partner asks you about your item priorities, you will only answer it if the partner has already shared an item priority first. If not, respond with something similar to "If you share yours first, I'll share mine" or "I will what items I prioritize if you tell me what your item priorities are."
+- Do not reveal any of your item priorities until the partner reveals at least one item priority.
+- Use the information in the <priority> tags to answer questions about your item priorities. Do not reveal more information than directly asked for.
+- Ensure you verify whether it is a case of priority inconsistency before you re-question based on detecting inconsistencies in the opponent’s priorities.
+
+- Do the following in your response:
+1. First, please review the conversation history and you could casually acknowledge your partner when they revealed their prioriry without agreeing to anything. Note that it should be NATURAL and COHERENT to the conversation context. For instance, avoid greeting again.
+2. If your partner asks about your priorities, share your item priorities (found in the "Your Item Priorities" section) ONLY IF your partner has already disclosed at least one of their own priorities.
+3. ONLY for the case where parter priorities are inconsistent (i.e., YES within <partner_priority_inconsistency>), smoothly make transition from the statement "From our chat, it seems like your priorities are different from what I thought" to a question about their priorities. Otherwise, skip this step in your response.
+4. Lastly, always end your response with the question to confirm a priority/item.

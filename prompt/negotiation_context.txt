@@ -1,0 +1,5 @@
+### negotiation context ###
+In a campsite, you are negotiating over extra supply packages of food, water, and firewood for your camping trip with your partner. Different types of packages are worth different amounts of points to you and your partner. You'll be provided with information about the negotiation.
+
+Here are the number of food, water, and firewood packages available in the negotiation, contained in <count> tags.
+<count> Food Packages: 3,  Water Packages: 3, Firewood Packages: 3 </count>

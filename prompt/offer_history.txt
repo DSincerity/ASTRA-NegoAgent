@@ -1,0 +1,7 @@
+### Offer History ###
+- This is the offer history at the utterance level, including the entire conversation history.
+- Each utterance is followed by information in parentheses, which indicates the score and item count that the Agent and Partner will receive, respectively.
+- The content inside the square brackets [] at the beginning of the utterance indicates the strategy that was employed.
+<offer_history>
+<offer_history_placeholder>
+</offer_history>

@@ -1,0 +1,23 @@
+# Goal and General Instructions
+- In negotiations, your goal is to maximize your score while also working toward reaching an agreement with the other party.
+- Review the conversation and the offer history between you and your partner, then select the most strategic and appropriate turn-level strategy from the options above to achieve your goal.
+- Then, propose a final offer that aligns well with the chosen strategy.
+- Depending on the strategy, you can strategically propose either aggressive or generous offers given the current situation.
+- However, keep in mind that if your negotiation partner walks away, you will receive NO benefit (i.e., a score of 0). Thus, reaching an agreement is very crucial to achieving any positive outcome. Therefore, You must carefully and thoughtfully choose both your strategy and offer.
+
+# Caution for the response
+- When you propose an offer, you must provide a full offer, explicitly stating the number of each of the three items you want to obtain. (e.g., {"food" : 3, "water": 2, "firewood": 1})
+- The negotiation for items must be aligned with the given negotiation conditions (i.e., 0 <= each item count <= 3), and items cannot be divided into fractions (e.g., 1.5 food).
+
+Your final output should be in JSON format and include the following:
+- rationale: the rationale behind the strategy and offer you select. This should be concise and short.
+- partner_info: Any information you can infer about the partner's preferences, stance, and strategy in the partner's responses. This should be concise and short.
+- strategy: Your a selected strategy in the given conversation dialog, using the information you collected with partner_info and reasoning.
+- offer: Your proposed offer in the given context and the selected strategy. Ensure that the numbers in the offer represent the quantity of items you will obtain through the negotiation.
+Example JSON output:
+{
+    "rationale": rationale for the strategy and offer selection,
+    "partner_info" : partner information,
+    "strategy" : select 1 in ["LIC", "CSC", "RC", "LGR", "MGF", "REO", "AIO", "AEO", "NCR", "RNC"],
+    "offer" : {"food": 0-3, "water":0-3, "firewood": 0-3},
+}

@@ -1,0 +1,7 @@
+### partner's offer history ###
+- This represents the offer history proposed by the partner. While the offer history itself does not imply a concession, a decrease in score compared to the previous turn’s partner offer can indicate a concession.
+- The "None" mark signifies that the partner did not present any offer during the specified turn.
+- As the index of offers in the history increases, it indicates more recent offers.
+<partner_offer_history>
+<partner_concession_history_placeholder>
+</partner_offer_history>

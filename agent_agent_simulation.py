@@ -21,6 +21,7 @@ from collections import Counter
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
+#from agent import NegotiationAgent, PartnerAgent, ModeratorAgent
 from agent import NegotiationAgent, PartnerAgent, ModeratorAgent
 from utils import (
     load_txt_file,
@@ -398,10 +399,10 @@ class AgentMaster:
         # Log comprehensive results
         logging.info("\\n**** Whole Conversation ****")
         logging.info(log_whole_conversation)
-        logging.info("\\n**** Whole Offer exchanges ****")
-        logging.info(log_offer_exchanges)
-        logging.info("\\n**** Concession History ****")
-        logging.info(log_concession_history)
+        logging.debug("\\n**** Whole Offer exchanges ****")
+        logging.debug(log_offer_exchanges)
+        logging.debug("\\n**** Concession History ****")
+        logging.debug(log_concession_history)
 
         # Log priority prediction accuracy
         if evaluation_metrics.get('partner_priority_prediction') is False:
@@ -547,7 +548,7 @@ def parse_experiment_args(parser: argparse.ArgumentParser) -> argparse.ArgumentP
                        help='OpenAI Engine')
     parser.add_argument('--engine-OSAD', type=str, default='gpt-4o-mini',
                        help='OpenAI Engine for OSAD')
-    parser.add_argument('--partner-other-prompting', type=str, default='',
+    parser.add_argument('--partner-other-prompting', type=str, default='base',
                        help='Other prompting for the partner agent')
     parser.add_argument('--engine-STR', type=str, default='gpt-4o',
                        help='OpenAI Engine for STR')
@@ -682,6 +683,9 @@ def initialize_agents(
         engine=args.engine_OSAD
     )
 
+    # Set OSAD agent for negotiator
+    agents['NegotiatorAgent'].set_OSAD_agent(agents['OSADAgent'])
+
     agents['ModeratorAgent'] = ModeratorAgent(
         agent_type='Moderator',
         engine=args.engine,
@@ -709,6 +713,7 @@ def main():
     """Main execution function."""
     # Set up logging
     setup_logging(logging.INFO)
+    #setup_logging(logging.DEBUG)
 
     # Parse arguments
     parser = argparse.ArgumentParser(description='Agent-Agent Simulation')

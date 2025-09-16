@@ -1,0 +1,4 @@
+### selected offer ###
+This is the next selected offer that will be suggested to the other party.
+Note that the item count in the selected_offer represents the number of items you will receive. For example, if the suggested offer is "Food:3, Water:2, Firewood:1" and the offer is accepted, you will receive 3 units of food, 2 units of water, and 1 unit of firewood.
+<selected_offer> <agent's_selected_offer> </seleceted_offer>

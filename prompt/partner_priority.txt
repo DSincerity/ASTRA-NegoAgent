@@ -1,0 +1,3 @@
+### partner previous inferred priority for items ###
+This is the inferred priority of partners for each item.
+<partner_preference> <partner_priority> </partner_preference>

@@ -1,7 +1,7 @@
 import logging
 
 from prompt.prompt_build import prompt_builder
-from base_dialog_agent import DialogAgent
+from agent.base_dialog_agent import DialogAgent
 from utils import *
 
 
@@ -186,7 +186,7 @@ class PriorityConsistencyChecker(DialogAgent):
                 agent_offer=self.agent.offer_history[-1] if len(self.agent.offer_history) > 0 else None,
                 partner_offer=gpt_items_partner)
 
-            logging.info(f"self.agent.is_partner_priority_consistent: {self.agent.is_partner_priority_consistent}")
+            logging.debug(f"self.agent.is_partner_priority_consistent: {self.agent.is_partner_priority_consistent}")
             logging.info(
                 f'[ConsistencyChecker] Offer is {"consistent" if self.agent.is_partner_priority_consistent else "inconsistent"} with partner priority based on the inconsistency in the counteroffer')
 

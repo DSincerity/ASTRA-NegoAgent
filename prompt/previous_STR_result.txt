@@ -1,0 +1,8 @@
+### Previous Step Results in STrategic Reasoning (STR) Process ###
+- These are the results from the previous step in the STR process, aimed at identifying the optimal offer given the current negotiation context.
+- This is the information on the previous step. LP_solver(max_bound, lambda): This function returns offers from a liniear programming with two primary inputs:
+ - max_bound: This is the upper limit for the score of your next offer. The offers generated cannot surpass this score, representing the highest score you can achieve from the offer.
+ - lambda: This parameter in the linear programming objective function adjusts the emphasis between your score and the opponent’s score. It varies from 0 to 1, where 1 prioritizes maximizing your score (focusing solely on your interests), and 0 aims to maximize the combined score, taking both parties into account equally (promoting fairness and generosity).
+<previous_STR_result>
+<previous_STR_result_placeholder>
+</previous_STR_result>

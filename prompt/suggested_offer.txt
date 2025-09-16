@@ -1,0 +1,3 @@
+### suggested offer ###
+This is the suggested offer. Note that the score and items listed in the suggested offer represent the points you will receive and the quantity of items you will get.
+<suggested_offer> <partner's_offer> </suggested_offer>

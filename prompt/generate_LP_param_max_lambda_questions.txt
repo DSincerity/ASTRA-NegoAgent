@@ -1,0 +1,36 @@
+### Task ###
+This task is determining the input parameters for a linear programming function (i.e., LP_solver()) for a next step to get suitable offer candidates in the current negotiation conversation and given information (ex., partner's fairness and stance) The determined inputs represent your strategic stance and decision given partner's stance/behavior in the current negotiation.
+
+# Parameter Adjustment Guidelines:
+Main Strategy for Parameter Adjustment: Implement a Tit-for-Tat strategy where you mirror the partner’s stance and fairness using a “tit-for-tat” approach. When the partner’s offer is unfair, place more weight on their stance than fairness. Conversely, if the offer is fair, let fairness override stance in adjusting parameters.
+
+Negotiation Stage: Determine if the negotiation is in the final stage by checking if the current round falls within the last third of the total rounds.
+Attent to the partner's fairenss and stance to adjust max_bound and lambda
+
+Adjustments Based on Fairness of the Partner’s Offer:
+- Fair Offers: If the partner’s offer is fair, prioritize fairness over their stance. Adjust max_bound and lambda to make your next offer more generous. But if partner's stance is greedy, do not adjust max_bound; it should remain equal to the score of your most recent offer.
+- Unfair Offers: If the offer is unfair, weigh the partner’s stance more heavily than fairness. Adjust max_bound and lambda to make your offer similar to your partner's stance.
+- If the partner’s most recent stance is greedy, you can set the max_bound equal to the score of your latest offer in the <latest_offer> tag for you to suggest a greedy offer by mirroing the partner's stance.
+
+Adjustments Based on the Partner’s Stance:
+- If the partner’s offer is unfair and their stance appears greedy, respond by mirroring their approach with a similarly assertive adjustment to max_bound and lambda, reflecting an aggressive stance.
+- If the partner’s offer is unfair but their stance is generous (e.g., they are making concessions), acknowledge this generosity by adjusting the LP parameters with more flexibility. For example, a generous stance might justify a lower lambda (closer to 0, leading your stance generous), despite the offer’s unfairness.
+- If the partner’s stance appears neutral, but their score has remained unchanged over the last three consecutive turns, interpret this as a ‘greedy’ stance for adjustment purposes.
+
+
+Additioanl Instruction for the Adjustmennt:
+- Max Bound Definition: The max_bound sets an upper limit on the score you can receive. The function generates multiple offers with scores under this boundary, from which a final offer will be selected in later steps. Lowering this boundary strategically can help achieve a more favorable outcome.
+- Max Bound Constraint: The max_bound must always be equal to or less than the score of your most recent offer and should never exceed this value, even when adopting a more assertive approach.
+- Initial Max Bound Setup: If the partner’s first offer is unfair, set an initial max_bound at a high level (e.g., above 30). Even if the first offer is fair, starting with a high initial max_bound can still be a beneficial strategy.
+- Lambda and Max Bound Independence: No need to balance lambda and max_bound; each should be determined independently based on the situation.
+
+Final Stage or Favorable Offer Adjustments:
+- If the negotiation is in its final stage, or if the partner makes an offer that is significantly in your favor (where your score is much higher than the partner’s), lowering the max_bound can foster a more collaborative environment, leading to quicker and more efficient agreement.
+
+- The final output should be in JSON format as follows:
+{
+    'negotiation_stage': 'early' or 'middle' or 'final,
+    'rationale' : rationale for decision of the lambda and max_bound,
+    'lambda' : 0 (generous) - 1 (greedy) (This should be well aligned the rationale),
+    'max_bound' : 12 (minimum) - 36 (maximum) (This should be well aligned the rationale),
+}

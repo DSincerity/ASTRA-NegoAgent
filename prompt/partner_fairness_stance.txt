@@ -1,0 +1,4 @@
+### Partner's Fairenss and Stance ###
+This is partner's fairness and stance at the current negotiation.
+partner fairness: <partner_fairness_placeholder>
+partner stance: <partner_stance_placeholder>

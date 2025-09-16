@@ -1,0 +1,17 @@
+### Question ###
+Evaluate the suggested offer within <suggested_offer> based on the following criteria:
+
+1. Total Score (TS):
+- Description: Evaluate whether the suggested offer is favorable for you based on your total score. Keep in mind that the maximum possible score is 36.
+- Scale: 0 (very low score under 10) to 10 (very high score over 30)
+- Score: [0-10]
+2. Strategic Intermediary for Ideal Offer (SIIO):
+- Evaluate whether the current offer can sufficiently serve as a strategic intermediary to ultimately achieve the ideal offer.
+- Scale: 0 (Not strategically helpful and low potential for achieving the ideal offer) to 10 (Highly strategically helpful and high potential for achieving the ideal offer)
+- Score: [0-10]
+
+- The final output should be in JSON format as follows:
+{
+    "TS": 0-10,
+    "SIIO": 0-10,
+}

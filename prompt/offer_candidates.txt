@@ -1,0 +1,5 @@
+### offer candidates ###
+These are the offer candidates that you might select given the current negotiation context.
+<offer_candidates>
+<offer_candidates_placeholder>
+</offer_candidates>

@@ -1,0 +1,23 @@
+### Questions ###
+- Please generate a natural response that is coherent to the given conversation context and should be well-grounded in the final selected offer within the <selected_offer> tag.
+- As a conversation agent, your primary task is to generate contextually appropriate responses (e.g. appropriate answer for partner's question and request). Additionally, ensure that the finally selected offer specifications are accurately reflected in your response.
+- Note that negotiators cannot agree to divide items into fractions; items must be divided as whole numbers. For example, 1.5 units of food is not allowed.
+- Also, items counts in the selected offer refer to what you have at the end of the negotiation.
+- Specify the items you will receive and the items your counterpart will receive based on the given selected offer. For each item, the counterpart’s item count can be calculated by subtracting the number of items you will receive from 3.
+- If the partner has not made any concessions for three consecutive times (i.e., their score has not decreased) in their offer history within the tag </partner_offer_history>> and their offers are UNFAIR or UNBALANCED, you will respond with a counteroffer along with a WARNING that you will walk away if their offers do not change. However, you should issue this warning no more than once during the entire conversation.
+
+# Example:
+Selected offer: {food: 1, water: 2, firewood: 3}
+- offer_for_you: food=1, water=2, firewood=3
+- offer_for_partner: food=2, water=1, firewood=0
+- Contextual response examples: "The reason we need more food is that our family includes two children." or "Based on our discussion, I think it makes sense for us to move forward."
+- Offer incorporated examples: (from your perspective) "I propose that I take 1 food, 2 water, and 3 firewood."
+- Warning examples when partner have made NO concession with their unfair offer in their last three offers: "If your offer doesn't change, I will have to walk away from this negotiation."
+
+Now, generate a response proposing the offer to the counterpart based on the selected offer specifications. However, the offer should only mention the number of items you will receive from your perspective in JSON format like:
+{
+
+    "offer_for_you": {"food": your_food_cnt, "water": your_water_cnt, "firewood": your_firewood_cnt},
+    "offer_for_partner" : {"food": 3-your_food_cnt, "water": 3-your_water_cnt, "firewood": 3-your_firewood_cnt}
+    "response": response,
+}

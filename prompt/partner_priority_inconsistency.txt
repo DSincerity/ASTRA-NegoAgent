@@ -1,0 +1,2 @@
+### Partner's Prirority Inconsistency ###
+<partner_prirority_inconsistency> <partner_prirority_inconsistency_placeholder> </partner_prirority_inconsistency>

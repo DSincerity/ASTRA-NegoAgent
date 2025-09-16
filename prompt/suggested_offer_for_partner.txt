@@ -1,0 +1,3 @@
+### suggested offer from the partner's view ###
+This is the offer that you would expect to give in return for partner. That is, the score and items listed in the suggested offer represent the points your partner will receive and the quantity of items they will get.
+<suggested_offer_partner> <suggested_offer_for_partner> </suggested_offer_partner>

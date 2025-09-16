@@ -1,0 +1,49 @@
+### Task ###
+This task is determining the input parameters for a linear programming function (i.e., LP_solver()) for a next step to get suitable offer candidates in the current negotiation conversation and available information from the next linear programming. The determined inputs represent your strategic stance and decision given partner's stance/behavior in the current negotiation.
+
+# Function Overview:
+LP_solver(max_bound, lambda): This function generates offers based on two key input arguments:
+ - max_bound: A upper threshold (i.e., a maximum score) for your next offer candidates. The total score of the offers returned by this function cannot exceed this maximum bound. The higher this value is set, the LP function will return the offers with higher scores, which are more advantageous to you. However, the final offer will be determined in the next step, so a higher max bound here does not necessarily mean that a offer with higher score will ultimately be selected.
+ - lambda: This parameter in the linear programming objective function determines the weight given to your score versus the opponent's score. This value acts as a weight for your score; the higher it is, the more it emphasizes your score. It ranges from 0 to 1, where 1 focuses solely on maximizing your score (being greedy and very self-centered), while 0 aims to maximize the joint score, considering both parties equally (being considerate and generous, and making fair distribution).
+
+# Identify key factors (partner's fairness and stance, and negotiation stage) for the parameter adjustment:
+1. Partner Offer Fairness: Assess the fairness of the partner’s latest offer by comparing both your score and the partner’s score from their most recent offer (found in <offer_history>). The assessment should focus on the comparison of the scores from the partner’s latest offer, not based on the offer you proposed. If no offer was made in the previous turn, classify fairness as ‘unknown.’
+- Fair:
+    - The score difference between you and your partner is small (≤ 3).
+    - The partner’s score is less than 19.
+    - The partner’s score is lower than or equal to yours.
+- Unfair: The partner’s score is significantly higher than yours.
+- Unknown: No offer was made in the previous turn
+2.	Partner’s Stance: Determine if the partner’s stance is generous, greedy, or neutral based on their most recent offer in the partner's offer history with <partner_offer_history>.
+- Generous: The partner’s score decreased (a concession).
+- Greedy: The partner’s score increased.
+- Neutral: The partner’s score remained unchanged, or No offer was made in the previous patner's turn in the partner's offer history.
+Note: the partner’s stance classification is based purely on whether a concession was made, not on fairness.
+3.	Negotiation Stage: Determine if the negotiation is in the final stage by checking if the current round falls within the last third of the total rounds.
+
+# Parameter Adjustment Guidelines:
+Main Strategy for Parameter Adjustment: Implement a Tit-for-Tat strategy where you mirror the partner’s stance and fairness using a “tit-for-tat” approach. When the partner’s offer is unfair, place more weight on their stance than fairness. Conversely, if the offer is fair, let fairness override stance in adjusting parameters.
+Adjustments Based on Fairness of the Partner’s Offer:
+- Fair Offers: If the partner’s offer is fair, prioritize fairness over their stance. Adjust max_bound and lambda to make your next offer more generous.
+- Unfair Offers: If the offer is unfair, weigh the partner’s stance more heavily than fairness. Adjust max_bound and lambda to make your offer similar to your partner's stance.
+Adjustments Based on the Partner’s Stance:
+- If the partner’s offer is unfair and their stance is greedy, focus more on matching their stance with a similarly aggressive adjustment to max_bound and lambda.
+- If the partner’s offer is unfair and their stance is generous, showing generosity through concessions, take this into account and adjust the LP parameters more considerately. For instance, a generous partner’s stance can lead to a lower lambda (closer to 0, leading your stance generous), despite some unfairness.
+Adjustmennt for Max Bound:
+- max_bound represents the maximum score you can receive. The function returns multiple offers with scores below this boundary, from which a final offer is selected in subsequent steps. Lowering the maximum boundary should be approached strategically to achieve a favorable outcome.
+- The max_bound must always be equal to or less than the score of your most recent offer. It should never exceed this value, even if aiming for a more assertive stance.
+- The initial max_bound should be set as a high value (e.g., greater than 30).
+Final Stage or Favorable Offer Adjustments:
+- If the negotiation is in its final stage, or if the partner makes an offer that is significantly in your favor (where your score is much higher than the partner’s), lowering the max_bound can foster a more collaborative environment, leading to quicker and more efficient agreement.
+
+- The final output should be in JSON format as follows:
+{
+    'negotiation_stage': 'early' or 'middle' or 'final,
+    'rationale_for_stance' : First, find two partner's scores from their most recent offers in the partner's offer history. Then, check if the partner made a concession and classify their stance,
+    'rationale_for_fairness: First, find both of your and the partner's scores from the partner's LASTET offer in the partner's offer history. Then, given the standard of classifying the partner offer fairness, classify their fairness,
+    'rationale' : rationale for decision of the lambda and max_bound,
+    'partner_offer_fairness' : 'fair' or 'unfair' or 'unknown' by by reviewing both your and your partner’s scores in the latest partner offer from the offer history,
+    'partner_stance' : 'generous' or 'greedy' or 'neutral' by checking the concession in partner offer history,
+    'lambda' : 0 (generous) - 1 (greedy),
+    'max_bound' : 15 (minimum) - 36 (maximum),
+}

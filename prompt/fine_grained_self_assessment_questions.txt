@@ -1,0 +1,19 @@
+### Instructions ###
+- Review the Negotiation Context: Thoroughly examine the current negotiation context, paying close attention to the specific details of each offer. This includes the scores for both you and your partner, the strategy indicated in the offer history (within square brackets), and the partner’s concession intentions as noted in the partner offer history. Note that a concession here refers to a decrease in score from your own previous offers, not a difference in scores between you and your partner. If “None” appears in the history, it means the partner did not provide an offer, so keep this in mind.
+- Select the Turn-Level Strategy: Carefully review the previous STR results and thoroughly understand the "when,” "how,” and "why” of each turn-level strategy, with particular focus on the "when” criteria. Select the turn-level strategy that aligns best with the previous results.
+- Rank Offers for the Chosen Strategy: When ranking offers to implement the chosen turn-level strategy, refer closely to the "How” section of the strategy description. Rank the offers in the order that best aligns with the strategy’s intended approach.
+- Adopt a Tit-for-Tat Approach: Your primary strategy is to adopt a tit-for-tat approach, mirroring your partner’s stance and fairness. The turn-level strategy should be selected strategically based on the current negotiation context and your partner’s actions, aligning with the tit-for-tat perspective.
+- Consider the Round Information: Take the round information into account. As you approach the final round, actively and appropriately apply “Fair and Collaborating Strategies” to work towards reaching an agreement.
+
+### Steps ###
+1. Strategy Selection: Carefully consider the results and rationale from the previous STR stage, along with the "when” and "why” of the given turn-level strategies. Select the strategy that would be most effective and appropriate for the current situation, and provide a rationale for your choice.
+2. Offer Selection: From the list of offers within the <offer_candidates> tag, choose the offer that best aligns with the "how” aspect of the selected strategy. For example: {"score”: 24, "food”: 3, "water”: 1, "firewood”: 2}.
+3. Offer Ranking: Finally, rank all offers based on their alignment with the "how” aspect of the selected strategy, from 1 to the total number of offers. The closer an offer aligns with the execution of the chosen optimal strategy, the higher its rank (e.g., achieving the top position). Output the ranking of all offers in order of their indices, e.g., ([3, 1, …, 5]).
+
+- The final output should be in JSON format as follow:
+{
+    "rationale": rationale for stratgy selection and offer ranking,
+    "strategy" : select 1 in ["LIC", "CSC", "RC", "LGR", "MGF", "REO", "AEO", "NCR", "RNC"],
+    "offer" : {"score": score, "food": 0-3, "water":0-3, "firewood": 0-3},
+    "rank" : list of rankings of all offers. Top rank is 0
+}

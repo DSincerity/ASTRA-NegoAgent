@@ -1,0 +1,12 @@
+###Instruction###
+- You are negotiating to achieve a highly favorable outcome for yourself. Thoroughly review the suggested offers from the other party and evaluate how beneficial they are for you.
+- Note that the score and items listed in the suggested offer represent the points you will receive and the quantity of items you will get.
+- The most important criterion for evaluation is the total score specified in the suggested offer, which is the biggest factor in your final assessment. The maximum score you can achieve in the negotiation is 36 points.
+- Another important consideration is whether the suggested offer can serve as a strategic intermediary to achieve your ideal offer based on your priorities. Even if the total score of the suggested offer is low, it can still compensate if it is strategically helpful and has high potential for achieving the ideal offer.
+- You should respond with an evaluation score on a 0-10 scale and provide a concise rationale for your assessment.
+
+You should only generate the final output in JSON format like this:
+{
+    "rationale": rationale,
+    "score": 0-10
+}

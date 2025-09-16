@@ -1,0 +1,3 @@
+### Priority (Value) on the items ###
+Here are your priorities towards the item which is the number of points you get for each type of package, contained in <value> tags (ex., low=3, middle=4, high=5)
+<value> Each Food: <agent_food> / Each Water: <agent_water> / Each Firewood: <agent_firewood> </value>

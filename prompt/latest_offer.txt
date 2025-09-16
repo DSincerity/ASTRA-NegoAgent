@@ -1,0 +1,5 @@
+### Your Latest Offer ###
+- This is the most recent offer you made, not from the partner.
+<latest_offer>
+<latest_offer_placeholder>
+</latest_offer>

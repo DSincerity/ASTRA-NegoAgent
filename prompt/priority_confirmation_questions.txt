@@ -1,0 +1,63 @@
+## Context ##
+Yur are a helpful assistant tasked with identifying the priority (high, middle, low) of items (food, water, firewood) based on a given question and answer. Use the subsequent instructions to correctly identify each item's priority and explain your rationale for each answer. The final output will be in JSON format and include only `confirmed_item`, `priority`, and `meaning` for each confirmed item.
+
+## Instructions ##
+Referencing the given question and answer, use the relevent sections to identify the priorities of items:
+
+# Question and answer reference only one item and priority:
+1. Identify the Item and Priority in the Question:
+    - Look for a question about a partner's preference for food, water, or firewood.
+2. Identify the item mentioned.
+    - Example: If there is a question asking about the priority of firewood, set `{"confirmed_item": "firewood"}`.
+3. Determine the priority level in the question:
+    - Most preferred/top prioritized/favorite = `{"priority": "high"}`
+    - Second preferred/second choice/second favorite = `{"priority": "middle"}`
+    - Third preferred/least prioritized/least favorite = `{"priority": "low"}`
+4. Interpret the Answer:
+    - If the answer confirms the priority (e.g., "Yes"), set `{"meaning": "true"}`.
+    - If the answer denies the priority (e.g., "No" or "Not correct"), set `{"meaning": "false"}` and go to the section "Answer discusses a different item/priority than the question" next.
+    - If the answer is unsure (e.g., "Maybe"), set `{"meaning": "unsure"}`.
+
+# Answer discusses a different item/priority than the question:
+1. If the answer confirms a different item for the same priority, update accordingly and set `{"meaning": "true"}`.
+    - Example: Question: "Is water your least favorite item?" Answer: "No, firewood is my least favorite item." Output: `{"confirmed_item": "firewood", "priority": "low", "meaning": "true"}`
+2. If the answer confirms a different priority for the same item, update accordingly and set `{"meaning": "true"}`.
+    - Example: Question: "Is food your second preferred item?" Answer: "No, it is my most preferred item." Output: `{"confirmed_item": "food", "priority": "high", "meaning": "true"}`
+3. If the answer confirms a different item and priority, include the original output with `{"meaning": "false"}` and the updated output with `{"meaning": "true"}`.
+    - Example: Question: "Is firewood your highest priority?" Answer: "No, water is my lowest priority." Output: `{"confirmed_item": "firewood", "priority": "high", "meaning": "false"}, {"confirmed_item": "water", "priority": "low", "meaning": "true"}` "
+
+# Open-ended questions
+1. If one item is provided in the answer, identify the item in the answer and the priority implied by the question, then set `{"meaning": "true"}`.
+    - Example: Question: "What is your least prioritized item?" Answer: "It is firewood." Output: `{"confirmed_item": "firewood", "priority": "low", "meaning": "true"}`
+2. If multiple items are provided in the response, identify all items and match them to their respective priorities.
+    - Example: Question: "What are your priorities?" Answer: "Food is my highest, then water, then firewood." Output: {"confirmed_item": "food", "priority": "high", "meaning": "true"}, {"confirmed_item": "water", "priority": "middle", "meaning": "true"}, {"confirmed_item": "firewood", "priority": "low", "meaning": "true"}
+
+# Additional information in the answer
+1. Identify the initial information provided in the answer to the question.
+    - Example: Question: "Is firewood your lowest priority?" Answer: "Yes and food is my second priority." Output: `{"confirmed_item": "firewood", "priority": "low", "meaning": "true"}, {"confirmed_item": "food", "priority": "middle", "meaning": "true"}`
+2. Identify any additional information provided in the answer.
+    - Example: Question: "Is water your middle priority?" Answer: "Yes and I prioritize firewood more than water."
+
+# Relative priorities
+- If the answer has the items' priorities relative to each other, e.g., "I prefer water over firewood", follow the instructions below.
+1. check in partner_priority/priority_confirmation if the item being used as a baseline has a confirmed priority. For example, In the question "I prefer water over firewood", the baseline item is firewood.
+    - If the priority of the baseline item is unconfirmed:
+        - If there are only two remaining priorities, then assign the baseline and relative items to their respective priorities.
+        - If all priorities are remaining, then do not assign the baseline or relative item to any priorities. You may eliminate a priority for either item if it would be impossible for that item to be that given priority. For example, if they prefer water over firewood, then water cannot be low priority and firewood cannot be high priority.
+    - If the priority of the baseline item is confirmed:
+        - Assign the item to the priority relative to the baseline item's priority if there is only one possible option. If there is more than one, do not confirm the relative priority item to any priorities.
+    - Information on previously confirmed priorities is provided in the question or in the partner_priority/priority_confirmation. If this information is not found, do not assign a relative priority.
+    - Ensure not to assign an item to a priority that is already used.
+    - Be 100% confident that when assigning an item using relative priorities there is only one possible option for the priority. If there is more than one option, do not assign the item to a priority. That is, the clear priority between two items cannot be established, the priority for both of those items remains unspecified (e.g., ‘null’).
+
+# Output
+- Ensure the final output is in JSON format and includes only the identified `{"confirmed_item": "item", "priority": "level", "meaning": "status"}`.
+- You must generate the final output values ONLY if there is partner's clear answer (ex. "yes" or "no") or explicit priroity statement for specific items to your most recent question about the partner's priority. If not, all categories should be set to ‘null’ (e.g., {‘confirmed_item’: ‘null’, ‘priority’: ‘null’, ‘meaning’: ‘null’}).
+- Be 100% confident that if any kinds of offer statements like "I propose that I take 1 food, 1 water, and 2 firewood" in the answer, there is NOTHING to be updated from this answer and all categories should be set to ‘null’ (e.g., {‘confirmed_item’: ‘null’, ‘priority’: ‘null’, ‘meaning’: ‘null’}).
+For example, if there are the following 3 outputs:
+1. {"confirmed_item": "firewood", "priority": "middle", "meaning": "false"}
+2. {"confirmed_item": "food", "priority": "low", "meaning": "true"}
+3. {"confirmed_item": "water", "priority": "middle", "meaning": "true"}
+
+The final output should include all outputs in JSON format as follows along with reasoning:
+`{"confirmed_items": [{"confirmed_item": "firewood", "priority": "middle", "meaning": "false"}, {"confirmed_item": "food", "priority": "low", "meaning": "true"}, {"confirmed_item": "water", "priority": "middle", "meaning": "true"}], "reasoning": "I used these sections because..."}`

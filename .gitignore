@@ -1,7 +1,11 @@
-*.txt
+#1*.txt
 .flake8
 .python-version
 log
 a2a_results
 .cache
 __pycache__
+CLUADE.md
+REFACTORING_GUIDE.md
+*_backup*
+CLAUDE.md

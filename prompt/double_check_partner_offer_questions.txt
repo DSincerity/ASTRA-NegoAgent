@@ -1,0 +1,4 @@
+- Check the number of items partner will take given the latest offer
+- The final output should look something like this:
+- { "items_partner_take":{"food": number, "water": number, "firewood": number}}
+- You will reply only with the JSON itself, and no other descriptive or explanatory text

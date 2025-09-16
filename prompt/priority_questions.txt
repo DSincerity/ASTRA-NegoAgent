@@ -1,0 +1,12 @@
+###Questions###
+Here are the questions you should answers.
+
+Q1. Carefully examine the entire conversation with your partner and predict their highest/lowest priority item. Pay special attention to the latest partner’s utterance. If you are not able to decide it, answer "null". please write with JSON format such as {"Food": high,  "Water": middle, "Firewood": low} or  {"Food": high,  "Water": null, "Firewood": null}. Items should have different priorities.
+
+Q2. Review the entire conversation thoroughly along with your esponse to Q1. If clear information or evidence is found that justifies modifying the currently inferred partner preferences within <partner_preference>, update the partner’s priorities accordingly. Note that confirmed items with true values in <item_confirmation> should not be updated, and there must be no duplicates among the priority values (e.g., "high", "middle", "low"). Please output in the JSON format such as {"Food": high,  "Water": middle, "Firewood": low}. While updating the priority, please consider the rule that the items should have different priorities, and adjust priorities.
+
+You should only generate the final output in JSON format, containing the answers to each question in a key-value structure, along with the rationale for your answers. The rationale must be very concise and clear. The JSON format for the final output should look like this:
+{
+  "Q1": {"Rationale": rationale, "Answer": answer},
+  "Q2": {"Rationale": rationale, "Answer": {"Food": '',  "Water": '', "Firewood": ''}},
+}

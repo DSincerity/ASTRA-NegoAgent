@@ -1,0 +1,13 @@
+### Task ###
+- This task is identify the partner's stance given their recent offer.
+- Partner’s Stance: Determine if the partner’s stance is generous, greedy, or neutral based on their MOST RECENT offer in the partner's offer history with <partner_offer_history>.
+    1. Generous: In the partner’s two most recent offers, the partner’s score has decreased in the latest offer (indicating a concession).
+    2. Greedy: In the partner’s two most recent offers, the partner’s score has increased in the latest offer (indicating a negative concession).
+    3. Neutral: The partner’s score has remained unchanged across the two most recent offers, or there was a turn without an offer in the partner’s recent offer history.
+- Note that if there is no or only one previous partner's offer in their offer history, the partner stance determined as "neutral".
+- If patner's scores don't change in the THREE latest offer in a row, consider parner's stance as 'greedy'.
+- The final output should be in JSON format as follows:
+{
+    'rationale_for_stance' : First, find two partner's scores from their most recent offers in the partner's offer history. Then, check if the partner made a concession and classify their stance,
+    'partner_stance' : 'generous' or 'greedy' or 'neutral' by checking the concession in partner offer history,
+}

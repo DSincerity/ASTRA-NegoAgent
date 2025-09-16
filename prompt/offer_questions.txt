@@ -1,0 +1,11 @@
+###Questions###
+- If there is partner's offer in the current(the latest) partner's utterance, what is it? Please express it from your perspective, indicating how many of each item you will get. Subtract the number of items the other party will have from their offer from the total count for each item such as {"Food": number, "Water": number, "Firewood": number}.
+- If there is no offer in the latest partner’s utterance, indicate ‘null’ for each item. Provide your answer in the JSON format: {"Food": 'null', "Water": 'null', "Firewood": 'null'}.
+
+Generate the final output only in JSON format, containing the answers to each question in a key-value structure, along with the rationale for your answers. The JSON format for the final output should look like this:
+{
+  "Q1": {
+      "Rationale": rationale,
+      "Answer": {"Food": number,  "Water": number, "Firewood": number} or {"Food": 'null', "Water": 'null', "Firewood": 'null'}
+    }
+}

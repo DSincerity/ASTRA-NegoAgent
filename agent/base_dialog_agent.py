@@ -47,7 +47,6 @@ class DialogAgent(object):
         if kwargs.get('model'): del kwargs['model']
 
         if ("gpt" in self.engine):
-            # logging.debug('calling gpt engine'))
             #logging.info("Calling GPT Engine - %s", engine)
 
             response = completion_with_backoff(

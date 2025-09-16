@@ -1,0 +1,12 @@
+### Question ###
+- What is the current negotiation status of the given dialogue within the <dialogue> tag?
+- For your answer, you must ensure that, towards the end of the players’ conversation, there is explicit agreement from one player to the other’s offer as a final deal, not a partial agreement on specific items.
+- If one decides to walk away, your final response should be 'WALK-AWAY' regardless of the conversation context.
+- Note that just warning to walk away like "If you do not agree, I will walk away" is not a "WALK-AWAY" case, but a "ON-GOING" case.
+- When evaluating WALK-AWAY decisions, differentiate between strategic conditional statements which is NOT a WALK-AWAY case (e.g., "If you do not accept, I will walk away") and actual WALK-AWAY decisions, rather than just looking for the phrase "WALK-AWAY".
+- First, state the reason for your judgment, then provide your final answer which should be in "ACCEPT-DEAL", "WALK-AWAY" and "ON-GOING"
+- Your response format must be a JSON format like:
+{
+    "reason": reason for your judgment,
+    "answer": "ACCEPT-DEAL" or "WALK-AWAY" or "ON-GOING"
+}

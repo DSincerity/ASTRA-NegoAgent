@@ -1,0 +1,17 @@
+- If there is partner's offer in the partner's utterance, what is it? Please express it from partner's perspective, indicating how many of each item partner will get
+- If unclear, assume Partner will give items away. If there is no offer put {}
+- Second, did the partner explicitly cite their item preference or the order of preferences as the reason for rejecting the offer? If not put 'None' - please do not infer or guess
+- For example, if partner said 'I want water the most, but your offer does not reflect my preference', then he/she is rejecting because your offer does not contain enough most preferred item
+
+- The final output should look something like this:
+- { "contains_partner_offer" : "T" or "F"
+    "partner_offer": {"items_you_will_get":{"food": number, "water": number, "firewood": number}} if there is partner offer else {"items_you_will_get":{}}
+    "mentioned_item_preference":{
+        "most_preferred_item": most_preferred_item or None,
+        "least_preferred_item": least_preferred_item or None,
+        "order_of_preference": itemA > itemB or None
+    }
+  }
+
+- Use only the values stated in examples, except for number of items
+- You will reply only with the JSON itself, and no other descriptive or explanatory text

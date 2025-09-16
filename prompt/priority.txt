@@ -1,0 +1,3 @@
+### Item Priorities ###
+Here are the priorities of food, water, and firewood packages contained in <priority> tags.
+<priority> Food: <food_priority>,  Water: <water_priority>, Firewood: <firewood_priority> </priority>
