@@ -14,28 +14,50 @@ from components import (
     PartnerPreferenceUpdater
 )
 from prompt.prompt_build import prompt_builder
-from utils import check_null_value, calculate_score, convert_item_cnts_partner, lower_key_dict, convert_priority_str_to_int, cache_results, get_cached_results, strategy_full_nm_mapper, sync_partner_priorirty_confimation, set_inital_partner_priority, validate_offer
+from utils import (
+    check_null_value, calculate_score, convert_item_cnts_partner,
+    lower_key_dict, convert_priority_str_to_int, cache_results,
+    get_cached_results, strategy_full_nm_mapper,
+    sync_partner_priorirty_confimation, set_inital_partner_priority,
+    validate_offer
+)
 
 class NegotiationAgent(DialogAgent):
-    """GPT Agent base class, later derived to be a AGENT in the scenario
-    initial_dialogue_histoy: list of dict. ex) [{"role": "system", "content": "..."}]
+    """
+    Strategic negotiation agent with ASTRA reasoning capabilities.
+
+    This agent implements sophisticated negotiation strategies including:
+    - Partner priority inference and consistency checking
+    - Strategic reasoning through ASTRA module
+    - Linear programming-based offer optimization
+    - Dynamic preference adaptation
+
+    Args:
+        agent_value_off_table: Dictionary mapping items to their values for this agent
+        initial_dialog_history: List of dialog messages to initialize conversation
+        agent_type: Type identifier for the agent ("negotiator", "partner")
+        engine: LLM engine identifier for this agent
+        system_instruction: System prompt/instruction for the agent
+        args: Command line arguments and configuration
+        **kwargs: Additional configuration parameters
     """
 
     def __init__(self,
                  agent_value_off_table: Dict,
-                 initial_dialog_history=None,  #
-                 agent_type="", # "negotiator", "partner"
+                 initial_dialog_history=None,
+                 agent_type="",  # "negotiator", "partner"
                  engine="gpt-4o-mini",
                  system_instruction=None,
                  args=None,
                  **kwargs
                 ):
-        """Initialize the agent"""
-        super().__init__(initial_dialog_history=initial_dialog_history or [{"role": "system", "content": system_instruction}],
-                         agent_type=agent_type,
-                         engine=engine,
-                         system_instruction=system_instruction
-                         )
+        """Initialize the negotiation agent with all necessary components."""
+        super().__init__(
+            initial_dialog_history=initial_dialog_history or [{"role": "system", "content": system_instruction}],
+            agent_type=agent_type,
+            engine=engine,
+            system_instruction=system_instruction
+        )
 
         logging.debug(f"Initializing {self.agent_type} with engine({self.engine})")
         assert isinstance(agent_value_off_table, dict)
@@ -184,11 +206,12 @@ class NegotiationAgent(DialogAgent):
                 return ("ASKING", self.ask_for_priority_confirmation(), None, None)
             else:
                 logging.info(f">> Stopped asking the partner's priority. Already asked twice. Asking needs or offers, asking cnt:{self.asking_priority_cnt}")
-                #self.priority_asker_on = False
+                # Reset asking counter after 2 attempts
                 self.asking_priority_cnt = 0
-                # for the case where the partner's priority is inconsistent, don't set the partner priroriy to the opposite one
-                #if self.is_partner_priority_consistent is True:
-                if not self.inconsistency_detected_case: # This variable is updated in the consistency checker
+
+                # Only set partner priority to opposite if no inconsistency detected
+                # (inconsistency_detected_case is updated by the consistency checker)
+                if not self.inconsistency_detected_case:
                     self.partner_priority= set_inital_partner_priority(self.partner_priority, self.priority_confirmation, self.agent_value_off_table)
                     logging.debug("> Set partner priroity to the opposite one: %s", self.partner_priority)
                 else:
@@ -196,9 +219,9 @@ class NegotiationAgent(DialogAgent):
                         logging.info(">> After Partner's priority inconsistency is detected, it still has null value in the inferred partner priorty. We will ask the partner what they want")
                         return ("ASKING", self.ask_for_priority_confirmation(ask_for_need_offer=True), None, None)
 
-        #################################################
-        # Concsistentcy Checker
-        #################################################
+        # ===================================================
+        # CONSISTENCY CHECKER: Validate Partner Priorities
+        # ===================================================
         self.priority_asker_on = False
         self.inconsistency_detected_case = False
         if self.priority_consistency_checker_on:
@@ -210,7 +233,7 @@ class NegotiationAgent(DialogAgent):
             self.priority_checker_on = True
             self.priority_asker_on = True
             self.asking_priority_cnt += 1
-            self.is_counter_offer = False # counter offers는 없었던 것으로 간주.
+            self.is_counter_offer = False  # Reset counter offer flag due to inconsistency
             return ("ASKING", self.ask_for_priority_confirmation(), None, None)
 
         # Add the last offer to the offer history
@@ -224,54 +247,51 @@ class NegotiationAgent(DialogAgent):
 
     def make_negotiation_decision(self):
 
-        ########################################
-        # Decision (Accept or Walk-Away)
-        ########################################
+        # ==========================================
+        # DECISION PHASE: Accept Deal or Walk Away
+        # ==========================================
         # Check if "DEAL" in the last response
         if any(deal.lower() in self.last_response.lower() for deal in ["ACCEPT-DEAL"]):
             logging.debug(">> Partner's last utterance contains 'ACCEPT-DEAL'.")
             return ("ACCEPT-WALKAWAY-DECISON", "ACCEPT-DEAL", None, None)
 
-        # Final Round (When the negotiation is close to the maximum turn), the Agent will make the final decision.
-        agent_BATNA = max(self.agent_value_off_table.values()) # top_priority_value = BATNA
+        # Final round decision: Agent uses BATNA (Best Alternative to Negotiated Agreement)
+        agent_BATNA = max(self.agent_value_off_table.values())  # Highest priority item value = BATNA
         logging.debug("compromised_decision_before_end: %s | is_counter_offer: %s", self.compromised_decision_before_end, self.is_counter_offer)
         if self.compromised_decision_before_end and self.is_counter_offer:
             score_from_partner_offer = calculate_score(self.partner_offer_history[-1], self.agent_value_off_table)
 
-            if score_from_partner_offer >= agent_BATNA:  # Accept decision based on the BATNA
+            if score_from_partner_offer >= agent_BATNA:  # Accept if offer meets BATNA threshold
                 logging.debug(">> Accepting the counter offer: Partner's offer score(%s) >= agent's BATNA(%s)", score_from_partner_offer, agent_BATNA)
                 return ("ACCEPT-WALKAWAY-DECISON", "ACCEPT-DEAL", None, None)
             else:
                 logging.debug(">> Walking away: Partner's offer score(%s) < agent's BATNA(%s)", score_from_partner_offer, agent_BATNA)
                 return ("ACCEPT-WALKAWAY-DECISON", "WALK-AWAY", None, None)
 
-        #####################################
-        # Propose an Offer
-        #####################################
+        # ===============================================
+        # OFFER GENERATION: Strategic Proposal Creation
+        # ===============================================
         generated_response = self.propose_offer(with_ASTRA=self.offer_proposer_w_STR)
 
-        #======== Temp logging ====
-        #TEMP: for logging and post analysis. assitant가 아닌 "user"에게  STR 결과를 insert
+        # Log strategic reasoning data for analysis
         self.utterance_offer_history[-1]["gen_params"] = self.generated_params[-1] if self.generated_params else None
         if self.utterance_offer_history[-1]["role"] == "user":
             self.utterance_offer_history[-1]["strategy"] = self.selected_strategy[-1] if self.selected_strategy else None
             self.utterance_offer_history[-1]["STR3_logs"] = self.STR3_logs[-1] if self.STR3_logs else None
-        #==========================
 
         if not self.is_counter_offer:
             return (f"STR-{self.offer_proposer_w_STR}", generated_response, self.offer_history[-1], None)
 
-        ################################
-        # Decision (Accept or Walk-Away)
-        # Before the Final round, When the partner makes a counter offer, the agent will make a decision based on the counter offer.
-        ################################
+        # ========================================================
+        # DECISION with COUNTER-OFFER EVALUATION: Accept/Reject Partner's Bid
+        # (Evaluation before final round when partner makes counter-offer)
+        # ========================================================
         score_from_partner_offer = calculate_score(self.partner_offer_history[-1], self.agent_value_off_table)
         STR_selected_offer_score = calculate_score(self.offer_history[-1], self.agent_value_off_table)
 
-        # Accept Condition
+        # ACCEPTANCE CONDITION: Compare partner offer with our strategic choice or tolerance threshold
         if score_from_partner_offer >= STR_selected_offer_score or self.tolerance_for_acceptance > 2:
-
-            # Accept the partner’s offer only if its score is higher than all previous offers.
+            # Only accept if this is the best offer the partner has made so far
             highest_score_from_partner_offer = max([calculate_score(offer, self.agent_value_off_table) for offer in self.partner_offer_history if offer is not None])
             if score_from_partner_offer >= highest_score_from_partner_offer:
                 logging.info(">> Accepting the counter offer: Partner's offer score(%s) >= STR selected offer score(%s)", score_from_partner_offer, STR_selected_offer_score)
@@ -280,17 +300,17 @@ class NegotiationAgent(DialogAgent):
                 logging.info(">> Not accepting the counter offer: current score from partner's offer (%s) < highest score from partner's offer(%s)", score_from_partner_offer, highest_score_from_partner_offer)
                 self.tolerance_for_acceptance += 1
 
-        # Walk-Away Condition: 1) Partner's offer score < agent's BATNA. 2) Partner's offer score does not change in the last three turns.
+        # WALK-AWAY CONDITIONS:
+        # 1) Partner's offer score < agent's BATNA
+        # 2) Partner's offer score decreases from previous turn
+        # 3) Partner repeats same offer for 3 consecutive turns
         if score_from_partner_offer < agent_BATNA:
             logging.info(">> Walk-Away 1st Cond met: Partner's offer score(%s) < value of agent's BATNA(%s)", score_from_partner_offer, agent_BATNA)
-            generated_response += "If you keep making offers that only consider your own interests, I'm going to walk away! " # Warning
+            generated_response += "If you keep making offers that only consider your own interests, I'm going to walk away! "  # Warning message
             if len(self.partner_offer_history) > 1:
                 two_turns_ago = self.partner_offer_history[-2]
-                if two_turns_ago is None:
-                    # case with null value will be skipped
-                    pass
-                elif len([ x for x in two_turns_ago.values() if x is None or x == 'null']) > 0:
-                    # case with null value will be skipped
+                # Skip evaluation if previous offer contains null values
+                if two_turns_ago is None or len([x for x in two_turns_ago.values() if x is None or x == 'null']) > 0:
                     pass
                 else:
                     score_partner_prev_offer = calculate_score(self.partner_offer_history[-2], self.agent_value_off_table)
@@ -298,12 +318,14 @@ class NegotiationAgent(DialogAgent):
                         logging.debug(">> Walk-Away 2nd Cond met: Partner's offer score(%s) < previous offer score(%s)", score_from_partner_offer, score_partner_prev_offer)
                         return ("ACCEPT-WALKAWAY-DECISON", "WALK-AWAY", None, None)
 
+        # Check for repeated offers (indicates partner is not negotiating in good faith)
         if len(self.partner_offer_history) > 2:
-
-            if self.partner_offer_history[-1] == self.partner_offer_history[-2] != self.partner_offer_history[-3]: # Warning when offers are repeated
+            last_three_offers = self.partner_offer_history[-3:]
+            if last_three_offers[-1] == last_three_offers[-2] != last_three_offers[-3]:
+                # Two consecutive identical offers: Issue warning
                 generated_response += "If you keep making offers that only consider your own interests, I'm going to walk away! "
-                pass
-            elif self.partner_offer_history[-1] == self.partner_offer_history[-2] == self.partner_offer_history[-3]:
+            elif last_three_offers[-1] == last_three_offers[-2] == last_three_offers[-3]:
+                # Three consecutive identical offers: Walk away
                 logging.debug(">> Walk-Away 3rd Cond met: Partner's offer is repeated in the last three turns.")
                 return ("ACCEPT-WALKAWAY-DECISON", "WALK-AWAY", None, None)
 
@@ -593,9 +615,6 @@ class NegotiationAgent(DialogAgent):
                 _offer = ""
             else:
                 # Process partner's offer from STR
-                #print("entry: ", entry)
-                #print("inferred_partner_priority: ", inferred_partner_priority)
-                #partner_offer = convert_item_cnts_partner(offer, int_partner_priority)
                 partner_offer = convert_item_cnts_partner(offer, inferred_partner_priority)
                 partner_offer_spec = f"Score={partner_offer[0]}: food={partner_offer[1]}, water={partner_offer[2]}, firewood={partner_offer[3]}"
 
@@ -727,6 +746,24 @@ class NegotiationAgent(DialogAgent):
 
 
 class PartnerAgent(DialogAgent):
+    """
+    Partner agent in negotiations with configurable personality and behavior.
+
+    This agent simulates various negotiation partner types and can be used for:
+    - One-step-ahead decision making (OSAD)
+    - Fine-grained offer assessment
+    - Partner behavior simulation with different personalities
+
+    Args:
+        agent_value_off_table: Dictionary mapping items to their values
+        initial_dialog_history: Initial conversation history
+        agent_type: Agent type identifier ("partner", "OSAD_agent")
+        engine: LLM engine to use for this agent
+        personality: Negotiation personality ("base", "greedy", "fair")
+        other_prompting: Additional prompting strategy
+        system_instruction: System prompt for the agent
+        verbose: Enable verbose logging
+    """
 
     def __init__(self,
                  agent_value_off_table: Dict,
@@ -738,12 +775,13 @@ class PartnerAgent(DialogAgent):
                  system_instruction=None,
                  verbose=False
                  ):
-        """Initialize the partner agent"""
-        super().__init__(initial_dialog_history=initial_dialog_history,
-                         agent_type=agent_type,
-                         engine=engine,
-                         system_instruction=system_instruction
-                         )
+        """Initialize the partner agent with specified personality and behavior."""
+        super().__init__(
+            initial_dialog_history=initial_dialog_history,
+            agent_type=agent_type,
+            engine=engine,
+            system_instruction=system_instruction
+        )
 
         self.initialize_agent(initial_dialog_history, system_instruction)
         logging.debug(f"Initializing {agent_type} with engine {self.engine}")
@@ -814,9 +852,25 @@ class PartnerAgent(DialogAgent):
 
 
 class ModeratorAgent(DialogAgent):
-    """NOTE: initial experiments shows that the moderator is much better at recognizing deal than not deal
-    Do not know why but interesting
     """
+    Moderator agent for overseeing and evaluating negotiation progress.
+
+    This agent monitors the negotiation flow and determines when agreements
+    are reached or when negotiations should be terminated. It tracks dialog
+    history and provides neutral oversight of the negotiation process.
+
+    Note: Empirical experiments show the moderator is more accurate at
+    recognizing deal acceptance than rejection scenarios.
+
+    Args:
+        initial_dialog_history: Initial conversation context
+        agent_type: Type identifier (should be "moderator")
+        engine: LLM engine for decision making
+        system_instruction: System prompt for moderator behavior
+        trace_n_history: Number of recent dialog turns to consider (-1 for all)
+        verbose: Enable detailed logging
+    """
+
     def __init__(self,
                  initial_dialog_history=None,
                  agent_type="moderator",
@@ -825,12 +879,13 @@ class ModeratorAgent(DialogAgent):
                  trace_n_history=-1,
                  verbose=False
                 ):
-        """Initialize the moderator agent"""
-        super().__init__(initial_dialog_history=initial_dialog_history,
-                         agent_type=agent_type,
-                         engine=engine,
-                         system_instruction=system_instruction
-                         )
+        """Initialize the moderator agent for negotiation oversight."""
+        super().__init__(
+            initial_dialog_history=initial_dialog_history,
+            agent_type=agent_type,
+            engine=engine,
+            system_instruction=system_instruction
+        )
 
         self.trace_n_history = trace_n_history
         self.verbose = verbose
