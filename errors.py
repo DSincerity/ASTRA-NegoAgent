@@ -1,2 +1,0 @@
-class OutputPasingError(Exception):
-    pass
