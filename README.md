@@ -177,15 +177,19 @@ We welcome contributions! Please feel free to submit issues, feature requests, o
 If you use this code or data in your research, please cite our paper:
 
 ```bibtex
-@misc{kwon2025astranegotiationagentadaptive,
-      title={ASTRA: A Negotiation Agent with Adaptive and Strategic Reasoning through Action in Dynamic Offer Optimization},
-      author={Deuksin Kwon and Jiwon Hae and Emma Clift and Daniel Shamsoddini and Jonathan Gratch and Gale M. Lucas},
-      year={2025},
-      eprint={2503.07129},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2503.07129},
+@inproceedings{kwon-etal-2025-astra,
+    title = "{ASTRA}: A Negotiation Agent with Adaptive and Strategic Reasoning via Tool-integrated Action for Dynamic Offer Optimization",
+    author = "Kwon, Deuksin and Hae, Jiwon and Clift, Emma and Shamsoddini, Daniel and Gratch, Jonathan and Lucas, Gale",
+    booktitle = "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing",
+    month = nov,
+    year = "2025",
+    address = "Suzhou, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.emnlp-main.821/",
+    pages = "16228--16249",
+    ISBN = "979-8-89176-332-6",
 }
+
 ```
 
 ## 📜 License
